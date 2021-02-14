@@ -1,6 +1,8 @@
 package br.net.serviceapp;
 
 
+import java.security.Security;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
@@ -9,7 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-
+//import de.dentrassi.crypto.pem.PemKeyStoreProvider;
 
 @SpringBootApplication
 public class ServiceAppWebApplication extends WebSecurityConfigurerAdapter {
@@ -17,6 +19,7 @@ public class ServiceAppWebApplication extends WebSecurityConfigurerAdapter {
 	private AuthenticationFailureHandler handler;
 
 	public static void main(String[] args) {
+		//Security.addProvider(new PemKeyStoreProvider());
 		SpringApplication.run(ServiceAppWebApplication.class, args);
 	}
 	
@@ -25,7 +28,7 @@ public class ServiceAppWebApplication extends WebSecurityConfigurerAdapter {
     	// @formatter:off
         http
             .authorizeRequests(a -> a
-                .antMatchers("/", "/error", "/webjars/**", "/images/**").permitAll()
+                .antMatchers("/", "/error", "/webjars/**", "/images/**", "/logout").permitAll()
                 .anyRequest().authenticated()
             )
             .logout(l -> l

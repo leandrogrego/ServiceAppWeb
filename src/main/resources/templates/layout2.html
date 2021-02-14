@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	th:with="version=${#strings.randomAlphanumeric(3)}">
+<head>
+<title>ServiceApp</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+</head>
+<body style="background-image: linear-gradient(black, silver 25%, height: 100%);">
+
+	<header th:fragment="cabecalho">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top d-flex justify-content-between"> 
+			<a class="navbar-brand" href="/">
+				<i class="fas fas-icon " >
+					<image style="height:30px" src="/images/logo2.png" />
+				</i>
+				ServiceApp
+			</a>
+			<button class="navbar-toggler btn-outline-light" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alterna navegação">
+				<span class="navbar-toggler-icon">
+					<span id="SocialName"></</span>
+					<img width=28 class="fas fa-user" id="socialIcon" /> 
+				</span>
+			</button>
+			<div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+				<div class="navbar-nav">
+					<div id="your-account" sec:authorize="isAnonymous()">
+	            		<span></span>
+			        </div>
+			        <div id="your-account" sec:authorize="isAuthenticated()">
+			        	<button type="button"
+							class="btn btn-light dropdown-toggle dropdown-toggle-split"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class=""
+							id=email>Conectado
+							</span>
+							<img id="avatar" width=28 class="fas fa-user" /> 
+						</button>
+						<div class="dropdown-menu">
+							<h6 class="dropdown-header">Opções de Administrador</h6>
+							<a class="dropdown-item" th:href="@{/register}"><i class="fas fa-plus-square"></i> Novo Administrador</a>
+							<a class="dropdown-item" th:href="@{/admin/list}"><i class="fas fa-list-alt"></i> Listar Administradores</a>
+							<div class="dropdown-divider"></div>
+							<h6 class="dropdown-header">Configurações</h6>
+							<a class="dropdown-item" th:href="@{/admin/changepassword}"><i class="fas fa-edit"></i> Editar Senha</a>
+							<a class="dropdown-item" th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Sair</a>
+						</div>
+					</div>
+		        </div>
+			</div>
+		</nav>
+	</header>
+
+	<div class="layout-main h-100">	
+		<div style="width:100%; height:60px"></div>
+		<section layout:fragment="corpo">		
+			<div>conteudo principal das páginas</div>
+		</section>		
+	</div>
+
+	<footer th:replace="fragments/footer :: rodape">
+		<div>footer</div>
+	</footer>
+	
+	<span th:replace="fragments/modal-confirm :: modal-confirm"></span>
+
+</body>
+<script type="text/javascript">
+	$.get("api/u", function(data) {
+        $("#email").html(data.name);
+        $("#avatar").attr("src",data.avatar_url);
+        $("#socialName").html(data.email);
+        $("#socialIcon").attr("src",data.avatar_url);
+        $(".unauthenticated").hide()
+        $(".authenticated").show()
+    });
+    
+    /*$.get("/error", function(data) {
+        if (data) {
+            $(".error").html(data);
+        } else {
+            $(".error").html('');
+        }
+    });*/
+    
+    var logout = function() {
+        $.post("/logout", function() {
+            $("#user").html('');
+            $(".unauthenticated").show();
+            $(".authenticated").hide();
+        })
+        return true;
+    }
+    
+    $.ajaxSetup({
+    	beforeSend : function(xhr, settings) {
+    		if (settings.type == 'POST' || settings.type == 'PUT'
+    	        || settings.type == 'DELETE') {
+    	    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+    	        .test(settings.url))) {
+    	        // Only send the token to relative URLs i.e. locally.
+    	        xhr.setRequestHeader("X-XSRF-TOKEN",
+    	        	Cookies.get('XSRF-TOKEN'));
+    			}
+    	    }
+   		}
+   	}); 
+   </script>
+   
+</html>

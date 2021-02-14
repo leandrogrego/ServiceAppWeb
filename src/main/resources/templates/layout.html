@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	th:with="version=${#strings.randomAlphanumeric(3)}">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<header th:replace="fragments/header :: cabecalho">
+		<div>header</div>
+	</header>
+
+	<div class="layout-main">	
+		<section layout:fragment="corpo">		
+			<div>conteudo principal das páginas</div>
+		</section>		
+	</div>
+
+	<footer th:replace="fragments/footer :: rodape">
+		<div>footer</div>
+	</footer>
+	
+	<span th:replace="fragments/modal-confirm :: modal-confirm"></span>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script th:src="@{/webjars/jquery/jquery.min.js(v=${version}) }"></script>
+	<script	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js(v=${version}) }"></script>
+	<!-- jQueryUI (autocomplete) -->
+	<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.min.js'></script>
+	<!-- 	Datatables JS -->
+	<script	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+	<script	src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script	src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+	<script	src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+	<!-- 	MEUS JS -->
+	<script th:replace=":: js"></script>	
+	<script th:replace=":: inlinescript" th:inline="javascript"></script>
+
+	<script type="text/javascript">
+		$(function() {
+			$('[data-toggle="tooltip"]').tooltip()			
+		});
+		
+		var url = '';
+		
+		$('table').on('click', 'a', function() {
+			url = $(this).attr('href');
+		});
+		
+		$("#btnOk").on('click', function() {
+			document.location.href = url;
+		});
+		
+		$("#btnCancel").on('click', function() {
+			url = '';
+		});
+		
+		var url = '';
+		
+		$(function() {
+			$('[data-toggle="popover"]').popover();
+		});
+		
+		$(document).ready(function(){
+		    $(".navbar-toggle").click(function(){
+		        $(".sidebar").toggleClass("sidebar-open");
+		    })
+		});
+	</script>
+	
+	<script type="text/javascript" >
+		function limpa_formulário_cep() {
+		        //Limpa valores do formulário de cep.
+		        document.getElementById('logradouro').value=("");
+		        document.getElementById('bairro').value=("");
+		        document.getElementById('cidade').value=("");
+		        document.getElementById('uf').value=("");
+		}
+		
+		function meu_callback(conteudo) {
+		    if (!("erro" in conteudo)) {
+		        //Atualiza os campos com os valores.
+		        document.getElementById('logradouro').value=(conteudo.logradouro);
+		        document.getElementById('bairro').value=(conteudo.bairro);
+		        document.getElementById('localidade').value=(conteudo.localidade);
+		        document.getElementById('uf').value=(conteudo.uf);
+		    } //end if.
+		    else {
+		        //CEP não Encontrado.
+		        limpa_formulário_cep();
+		        alert("CEP não encontrado.");
+		    }
+		}
+		
+		function pesquisacep(valor) {
+		
+		    //Nova variável "cep" somente com dígitos.
+		    var cep = valor.replace(/\D/g, '');
+		
+		
+		
+		    //Verifica se campo cep possui valor informado.
+		    if (cep != "") {
+		
+		        //Expressão regular para validar o CEP.
+		        var validacep = /^[0-9]{8}$/;
+		
+		        //Valida o formato do CEP.
+		        if(validacep.test(cep)) {
+		
+		            //Preenche os campos com "..." enquanto consulta webservice.
+		            document.getElementById('logradouro').value="...";
+		            document.getElementById('bairro').value="...";
+		            document.getElementById('localidade').value="...";
+		            document.getElementById('uf').value="...";
+		
+		            //Cria um elemento javascript.
+		            var script = document.createElement('script');
+		
+		            //Sincroniza com o callback.
+		            script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+		
+		            //Insere script no documento e carrega o conteúdo.
+		            document.body.appendChild(script);
+		
+		        } //end if.
+		        else {
+		            //cep é inválido.
+		            limpa_formulário_cep();
+		            alert("Formato de CEP inválido.");
+		        }
+		    } //end if.
+		    else {
+		        //cep sem valor, limpa formulário.
+		        limpa_formulário_cep();
+		    }
+		};
+		
+	</script>
+	<script type="text/javascript">
+			
+			function fMasc(objeto, mascara) {
+				obj = objeto
+				masc = mascara
+				setTimeout("fMascEx()", 1)
+			}
+			function fMascEx() {
+				obj.value = masc(obj.value)
+			}
+			function mCEP(cep) {
+				cep = cep.replace(/\D/g, "")
+				cep = cep.replace(/(\d{5})(\d)/, "$1-$2")
+				return cep
+			}
+				
+	</script>
+
+	
+</body>
+</html>

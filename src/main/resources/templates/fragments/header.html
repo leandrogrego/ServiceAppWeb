@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+	<header th:fragment="cabecalho">
+		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+			<a class="navbar-brand" th:href="@{/home}">ServiceApp</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse"
+				data-target="#navbarCollapse" aria-controls="navbarCollapse"
+				aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<a class="btn btn-dark" href="/dashboard">Painel</a>
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item dropdown"><a
+						class="btn btn-dark dropdown-toggle" href="#" id="dropdown01"
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Cadastro</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown01">
+							<a class="dropdown-item" th:href="@{/tanque/add}">Cadastrar Tanque</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/produtor/add}">Cadastrar Produtor</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/tecnico/add}">Cadastrar Técnico</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/responsavel/add}">Cadastrar Responsável</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/laticinio/add}">Cadastrar Laticínio</a>
+						</div>
+					</li>	
+					
+					<li class="nav-item dropdown"><a
+						class="btn btn-dark dropdown-toggle" href="#" id="dropdown01"
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Consultar</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown01">
+							<a class="dropdown-item" th:href="@{/tanque/list}">Lista de Tanques</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/produtor/list}">Lista de Produtores</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/tecnico/list}">Lista de Técnicos</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/responsavel/list}">Lista de Responsáveis</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" th:href="@{/laticinio/list}">Lista de Laticínios</a>
+						</div>
+					</li>		
+
+					<li class="nav-item dropdown"><a
+						class="btn btn-dark dropdown-toggle" href="#" id="dropdown06"
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Relatório</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown05">
+							<a class="dropdown-item" th:href="@{/Relatorios/add}">Criar Relatórios</a>
+							<div class="dropdown-divider"></div> 
+							<a class="dropdown-item" th:href="@{/Relatório/list}">Listar Relatórios</a>
+						</div>
+					</li>
+				</ul>
+
+				<form class="form-inline mt-2 mt-md-0" method="post" >
+					<div class="btn-group mb-1 mr-sm-1">
+						
+						<button type="button"
+							class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="btn btn-light">
+								<span class=""
+								id=email>Conectado
+								</span>
+								<img id="avatar" width=50class="fas fa-user" /> 
+								
+							</span>
+						</button>
+						<div class="dropdown-menu">
+							<h6 class="dropdown-header">Opções de Administrador</h6>
+							<a class="dropdown-item" th:href="@{/register}"><i class="fas fa-plus-square"></i> Novo Administrador</a>
+							<a class="dropdown-item" th:href="@{/admin/list}"><i class="fas fa-list-alt"></i> Listar Administradores</a>
+							<div class="dropdown-divider"></div>
+							<h6 class="dropdown-header">Configurações</h6>
+							<a class="dropdown-item" th:href="@{/admin/changepassword}"><i class="fas fa-edit"></i> Editar Senha</a>
+							<a class="dropdown-item" th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Sair</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</nav>
+		<script type="text/javascript">
+			$.get("api/u", function(data) {
+		        $("#email").html(data.email);
+		        $("#avatar").attr("src",data.avatar_url);
+		        $(".unauthenticated").hide()
+		        $(".authenticated").show()
+		    });
+		    
+		    /*$.get("/error", function(data) {
+		        if (data) {
+		            $(".error").html(data);
+		        } else {
+		            $(".error").html('');
+		        }
+		    });*/
+		    
+		    var logout = function() {
+		        $.post("/logout", function() {
+		            $("#user").html('');
+		            $(".unauthenticated").show();
+		            $(".authenticated").hide();
+		        })
+		        return true;
+		    }
+		    
+		    $.ajaxSetup({
+		    	beforeSend : function(xhr, settings) {
+		    		if (settings.type == 'POST' || settings.type == 'PUT'
+		    	        || settings.type == 'DELETE') {
+		    	    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+		    	        .test(settings.url))) {
+		    	        // Only send the token to relative URLs i.e. locally.
+		    	        xhr.setRequestHeader("X-XSRF-TOKEN",
+		    	        	Cookies.get('XSRF-TOKEN'));
+		    			}
+		    	    }
+	    		}
+	    	}); 
+	    </script>
+	</header>
+	
+</body>
+</html>

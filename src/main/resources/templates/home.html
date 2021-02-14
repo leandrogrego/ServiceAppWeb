@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+	layout:decorate="~{layout2}" > 
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body>
+
+	<section class="layout-content" layout:fragment="corpo">
+		<main role="main" class="h-100">
+			<div class="text-light h-100 ">
+				<div class="bg-dark col-4 h-100 d-inline-block" style="border-radius:50;">
+					<h3 class="text-center">Serviços</</h3>
+					<div id="listaServicos">
+						
+					</div>
+					<script type="text/javascript">
+						function geraBotaoServico(servico){
+							return'<button onclick="loadPrestadores('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
+								servico.name + '</button>';
+						}
+						
+						function addServico(servico){
+							var botao = geraBotaoServico(servico);
+							$("#listaServicos").append(botao);
+						}
+						
+						$.get("/api/servicos", function(servicos) {
+							servicos.forEach(addServico);
+						});
+					</script>
+				</div>
+				<div class="bg-dark col-4 h-100 d-inline-block" style="border-radius:50;">
+					<h3 class="text-center">Prestadores</</h3>
+					<div id="listaPrestadores">
+						
+					</div>
+					<script type="text/javascript">
+						function geraBotaoPrrestador(prestador){
+							return'<button class="btn btn-secondary btn-outline-warning text-light">'+
+							'<img width=20 src="'+prestador.avatar_url+'"> '+prestador.name + '</button>';
+						}
+						
+						function addPrestador(prestador){
+							var botao = geraBotaoPrrestador(prestador);
+							$("#listaPrestadores").empty();
+							$("#listaPrestadores").append(botao);
+						}
+						
+						function loadPrestadores(servicoId){
+							$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(prestadores) {
+								prestadores.forEach(addPrestador);
+							});
+						}
+					</script>
+				</div>
+				<div class="bg-black float-left col-4">
+					
+				</div>
+			</div>
+		</main>
+	</section>
+
+</body>
+</html>

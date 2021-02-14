@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+	layout:decorate="~{layout2}" > 
+<head>
+    <meta charset="utf-8"/>
+</head>
+<body>
+
+	<section class="layout-content" layout:fragment="corpo">
+	<div class="container text-light form-dark p-2" style='hieght:100%; background-image: url("/images/background.jpg")'>
+		<h1>ServiceApp</h1>
+		<image align="center" class="col-4 m-2 float-right" src="/images/logo.png" />
+		<div class="w-100">
+			ServiceApp é uma plataforma gratuita de comunicação para localização e contratação de prestação de serviço. 
+			<li>Encontre profissionais próximos de você e solicite um serviço.</li>
+			<li>Facilidade e rapidez no atendimento de todos os tipos de necessidade.</li>
+			<p></p><p></p><p></p>
+			<div class="row w-100">
+				<div class="col-12 d-flex justify-content-center">
+					Conectar com:
+				</div>
+				<div class="col-12 d-flex justify-content-center">
+					<a class="btn btn-primary btn-outline-light mr-2" 
+					href="/oauth2/authorization/facebook">
+						<i class="fas fas-icon " >
+							<image style="height:28px" src="/images/icons/color/facebook.svg" />
+						</i>Facebook
+					</a>
+					<a class="btn btn-secondary btn-outline-light mr-2" 
+					href="/oauth2/authorization/github">
+						<i class="fas fas-icon " >
+							<image style="height:28px" src="/images/icons/color/github.svg" />
+						</i>GitHub
+					</a>
+					<a class="btn btn-light btn-outline-primary mr-2" 
+						href="/oauth2/authorization/google">
+						<i class="fas fas-icon " >
+							<image style="height:28px" src="/images/icons/color/google.svg" />
+						</i>Google
+					</a>
+				</div>
+			</div>
+		</div>
+		<div style="width:100%; height:60px"></div>
+	</div>
+	</section>
+</body>
+</html>
