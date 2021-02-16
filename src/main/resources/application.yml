@@ -1,0 +1,50 @@
+server:
+  port: 443
+  ssl:
+    enabled: true
+    key-store: ../certificate/certificado.p12
+    key-store-type: PKCS12
+    key-store-password: senha
+    key-password: senha
+ 
+spring:
+  datasource:
+    password: senha
+    url: jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+  mail:
+    host: smtp.seudominio.com
+    port: 587
+    username: seuemail@seudominio.com
+    password: senha
+    properties:
+      mail: 
+        smtp: 
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          enable: true
+        test-connection: false    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: <CLIENT ID>
+            clientSecret: <CLIENT SECRET>
+          github:
+            clientId: <CLIENT ID>
+            clientSecret: <CLIENT SECRET>
+          facebook:
+            clientId: <CLIENT ID>
+            clientSecret: <CLIENT SECRET>
+      
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    show-sql: true

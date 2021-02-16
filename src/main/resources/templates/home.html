@@ -5,58 +5,153 @@
     <meta charset="utf-8"/>
 </head>
 <body>
-
-	<section class="layout-content" layout:fragment="corpo">
-		<main role="main" class="h-100">
-			<div class="text-light h-100 ">
-				<div class="bg-dark col-4 h-100 d-inline-block" style="border-radius:50;">
-					<h3 class="text-center">Serviços</</h3>
-					<div id="listaServicos">
-						
-					</div>
-					<script type="text/javascript">
-						function geraBotaoServico(servico){
-							return'<button onclick="loadPrestadores('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
-								servico.name + '</button>';
-						}
-						
-						function addServico(servico){
-							var botao = geraBotaoServico(servico);
-							$("#listaServicos").append(botao);
-						}
-						
-						$.get("/api/servicos", function(servicos) {
-							servicos.forEach(addServico);
-						});
-					</script>
+	<section layout:fragment="corpo" class="layout-content bg-primary d-flex flex-wrap justify-content-center" style="height: 100%; width:100%; backgorund-color: blue">
+		<main role="main" class="col-12 h-100 d-inline-block d-flex align-items-stretc" style="height: 100%">
+			<div class="bg-dark col-12 h-100 d-inline-block" style="border-radius:50; height: 100%;">
+				<div class="col-12 btn-success btn-outline-light" onclick="listServicos()">
+					<h3 class="text-center">Serviços</h3>
 				</div>
-				<div class="bg-dark col-4 h-100 d-inline-block" style="border-radius:50;">
-					<h3 class="text-center">Prestadores</</h3>
-					<div id="listaPrestadores">
-						
-					</div>
-					<script type="text/javascript">
-						function geraBotaoPrrestador(prestador){
-							return'<button class="btn btn-secondary btn-outline-warning text-light">'+
-							'<img width=20 src="'+prestador.avatar_url+'"> '+prestador.name + '</button>';
-						}
-						
-						function addPrestador(prestador){
-							var botao = geraBotaoPrrestador(prestador);
-							$("#listaPrestadores").empty();
-							$("#listaPrestadores").append(botao);
-						}
-						
-						function loadPrestadores(servicoId){
-							$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(prestadores) {
-								prestadores.forEach(addPrestador);
-							});
-						}
-					</script>
-				</div>
-				<div class="bg-black float-left col-4">
+				<div id="listaServicos" class="col-12">
 					
 				</div>
+				<script type="text/javascript">
+					function geraBotaoServico(servico){
+						return'<button onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
+							servico.name + '</button>';
+					}
+					
+					function addServico(servico){
+						var botao = geraBotaoServico(servico);
+						$("#listaServicos").append(botao);
+					}
+					
+					function listServicos(){							
+						$.get("/api/servicos", function(servicos) {
+							$("#listaServicos").html('');
+							servicos.forEach(addServico);
+							show("listaServicos");
+						});
+						
+					}					
+				</script>
+				<div class="col-12 btn-warning btn-outline-light" onclick="show('listaPrestadores')">
+					<h3 class="text-center">Prestadires</h3>
+				</div>
+				<div id="listaPrestadores" class="col-12" >
+				
+				</div>
+				<script type="text/javascript">
+					function geraBotaoPrrestador(prestador){
+						return'<button class="btn btn-secondary btn-outline-warning text-light">'+
+						'<img width=20 src="'+prestador.avatar_url+'"> '+prestador.name + '</button>';
+					}
+					
+					function addPrestador(prestador){
+						var botao = geraBotaoPrrestador(prestador);
+						$("#listaPrestadores").empty();
+						$("#listaPrestadores").append(botao);
+					}
+					
+					function loadPrestadores(servicoId, servicoName){
+						
+						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(prestadores) {
+							$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
+							prestadores.forEach(addPrestador);
+							show("listaPrestadores")
+						});
+						;
+					}
+				</script>
+				<div class="col-12 btn-secondary btn-outline-light" onclick="loadMyServicos()">
+					<h3 class="text-center">Meus Serviços</h3>
+				</div>
+				<div id="listaMeusServicos" class="row ol-12 text-light">
+					<div class="col-6 bg-success" >
+						Serviços Disponíveis
+					</div>
+					<div class="col-6 bg-warning">
+						Serviços Adicionados
+					</div>
+					<div id="noservicos" class="col-6 bg-success align-items-stretc">
+					</div>
+					
+					<div id="myservicos" class="col-6 bg-warning align-items-stretc">
+						
+					</div>
+				</div>
+				<script type="text/javascript">
+					function geraBotaoAddServico(servico){
+						return'<button onclick="addServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
+							servico.name + '</button>';
+					}
+					
+					function geraBotaoRemoveServico(servico){
+						return'<button onclick="remServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
+							servico.name + '</button>';
+					}
+					
+					function added(servico){
+						var botao = geraBotaoRemoveServico(servico);
+						$("#myservicos").append(botao);
+					}
+					
+					function notAdded(servico){
+						var botao = geraBotaoAddServico(servico);
+						$("#noservicos").append(botao);
+					}
+
+					function addServicos(id){
+						$.ajax({
+						    url: "/api/u/s/"+id,
+						    type: 'PUT',
+						    success: function(myservicos) {
+						    	$("#myservicos").html('');
+								$("#noservicos").html('');
+								myservicos[0].forEach(added);
+								myservicos[1].forEach(notAdded);
+						    }
+						});
+					}
+					
+					function remServicos(id){
+						$.ajax({
+						    url: "/api/u/s/"+id,
+						    type: 'DELETE',
+						    success: function(myservicos) {
+						    	$("#myservicos").html('');
+								$("#noservicos").html('');
+								myservicos[0].forEach(added);
+								myservicos[1].forEach(notAdded);
+						    }
+						});
+					}
+					
+					function loadMyServicos(){
+						$.get("/api/u/s", function(myservicos) {
+							$("#myservicos").html('');
+							$("#noservicos").html('');
+							myservicos[0].forEach(added);
+							myservicos[1].forEach(notAdded);
+						});
+						show("listaMeusServicos");
+					}
+					
+					function getuser(){
+						return get("/api/u", function(user) {
+							return user;
+						});
+					}
+					
+					function show(div){
+						$("#listaServicos").hide();
+						$("#listaPrestadores").hide();
+						$("#listaMeusServicos").hide();
+						$('#'+div).show();
+						$('#'+div+'Label').show();
+					}
+					
+					listServicos()
+				</script>
 			</div>
 		</main>
 	</section>

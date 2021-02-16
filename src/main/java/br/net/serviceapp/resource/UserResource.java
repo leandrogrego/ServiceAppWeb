@@ -1,4 +1,5 @@
 package br.net.serviceapp.resource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.net.serviceapp.model.Address;
 import br.net.serviceapp.model.Servico;
 import br.net.serviceapp.model.User;
+import br.net.serviceapp.service.ServicoService;
 import br.net.serviceapp.service.UserService;
 
 @RestController
@@ -31,6 +33,8 @@ public class UserResource {
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ServicoService servicoService;
 
 	public User add(User user) {
 		if(user != null ) {
@@ -40,10 +44,10 @@ public class UserResource {
 		return null;
 	}
 	
-
-
     @GetMapping("/u")
-    public ResponseEntity<User> user(@AuthenticationPrincipal OAuth2User principal) {
+    public ResponseEntity<User> user(
+    		@AuthenticationPrincipal OAuth2User principal
+    		) {
     	User user = userService.socialLogin(principal);
     	return ResponseEntity.ok(user);
     }
@@ -83,7 +87,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/user/{id}/servicos")
+	@GetMapping("/user0/{id}/servicos")
 	public ResponseEntity<List<Servico>> getUserServicos(
 			@PathVariable("id") Long id
 			) {
@@ -94,7 +98,29 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PutMapping("/user/{id}/servicos")
+	@GetMapping("/u/s")
+	public ResponseEntity<List<List<Servico>>> getUserServicosAndNotAddeds(
+			@AuthenticationPrincipal OAuth2User principal
+			) {
+		List<Servico> servicos = userService.socialLogin(principal).getServicos();
+		if(servicos != null){
+			List<Servico> notAdded = servicoService.findAll();
+			for(int i=0; i<servicos.size(); i++){
+				for(int j=0; j<notAdded.size(); j++){
+					if(servicos.get(i).getId() == notAdded.get(j).getId()) {
+						notAdded.remove(servicos.get(i));
+					}
+				}
+			}
+			List<List<Servico>> list = new ArrayList<List<Servico>>();
+			list.add(servicos);
+			list.add(notAdded);
+			return ResponseEntity.ok(list);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping("/user/{id}/servicos")
 	public ResponseEntity<List<Servico>> setUserServicos(
 			@PathVariable("id") Long id,
 			@RequestHeader("token") String token,
@@ -110,6 +136,77 @@ public class UserResource {
 			user.setServicos(servicos);
 			userService.save(user);
 			return ResponseEntity.ok(servicos);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+
+	@PutMapping("/u/s/{servicoId}")
+	public ResponseEntity<List<List<Servico>>> addUserServico(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("servicoId") Long servicoId
+			) {
+		User user = userService.socialLogin(principal);
+		Servico servico = servicoService.findOne(servicoId);
+		if(
+			user != null &&
+			servico != null
+		){
+			boolean exists = false;
+			for(int i=0; i<user.getServicos().size(); i++){
+				if(user.getServicos().get(i).getId() == servico.getId()) {
+					exists = true;
+				}
+			};
+			if(!exists) user.getServicos().add(servico);
+			userService.save(user);
+			List<Servico> notAdded = servicoService.findAll();
+			for(int i=0; i<user.getServicos().size(); i++){
+				for(int j=0; j<notAdded.size(); j++){
+					if(user.getServicos().get(i).getId() == notAdded.get(j).getId()) {
+						notAdded.remove(user.getServicos().get(i));
+					}
+				}
+			}
+			List<List<Servico>> list = new ArrayList<List<Servico>>();
+			list.add(user.getServicos());
+			list.add(notAdded);
+			return ResponseEntity.ok(list);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@DeleteMapping("/u/s/{servicoId}")
+	public ResponseEntity<List<List<Servico>>> delUserServico(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("servicoId") Long servicoId
+			) {
+		User user = userService.socialLogin(principal);
+		Servico servico = servicoService.findOne(servicoId);
+		if(
+			user != null &&
+			servico != null
+		){
+			boolean exists = false;
+			for(int i=0; i<user.getServicos().size(); i++){
+				if(user.getServicos().get(i).getId() == servico.getId()) {
+					exists = true;
+				}
+			};
+			if(exists) user.getServicos().remove(servico);
+			userService.save(user);
+			List<Servico> notAdded = servicoService.findAll();
+			for(int i=0; i<user.getServicos().size(); i++){
+				for(int j=0; j<notAdded.size(); j++){
+					if(user.getServicos().get(i).getId() == notAdded.get(j).getId()) {
+						notAdded.remove(user.getServicos().get(i));
+					}
+				}
+			}
+			List<List<Servico>> list = new ArrayList<List<Servico>>();
+			list.add(user.getServicos());
+			list.add(notAdded);
+			return ResponseEntity.ok(list);
 		}
 		return ResponseEntity.notFound().build();
 	}

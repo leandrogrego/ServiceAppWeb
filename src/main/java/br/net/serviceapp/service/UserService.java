@@ -35,7 +35,6 @@ public class UserService {
 	}
 	
 	public User socialLogin(OAuth2User principal) {
-		System.out.println(principal.toString());
 		String provider = "facebook";
 		String nameLabel = "name";
 		String emailLabel = "email";
@@ -132,11 +131,14 @@ public class UserService {
 		double longmax = longitude + (distance / 111.319892);
 		double longmin = longitude - (distance / 111.319892);
 		usersIn.forEach( user -> {
+			
 			if(
-				user.getLocation().getLatitude() <= latimax &&
-				user.getLocation().getLatitude() >= latimin &&
-				user.getLocation().getLongitude() <= longmax &&
-				user.getLocation().getLongitude() >= longmin
+				user.getLocation() == null || (
+					user.getLocation().getLatitude() <= latimax &&
+					user.getLocation().getLatitude() >= latimin &&
+					user.getLocation().getLongitude() <= longmax &&
+					user.getLocation().getLongitude() >= longmin
+				)
 			) {
 				usersOut.add(user);
 			}
