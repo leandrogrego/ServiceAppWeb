@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.net.serviceapp.model.Message;
+import br.net.serviceapp.model.Servico;
 import br.net.serviceapp.model.User;
 import br.net.serviceapp.service.MessageService;
 import br.net.serviceapp.service.UserService;
@@ -82,6 +85,23 @@ public class MessageResource {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	//LISTA DE MENSAGENS DE UM CONTATO
+	@GetMapping("/m/p/{id}")
+	public ResponseEntity<List<Message>> getMessagesPrestador(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("id") Long id
+			) {
+		User user = userService.socialLogin(principal);
+		User prest = userService.findOne(id);
+		if(user != null && prest != null){
+			List<Message> messages = messageService.findByUser(user, prest);
+			if(messages != null ){
+				return ResponseEntity.ok(messages);
+			}
+		}
+		return ResponseEntity.notFound().build();
+	}
 
 	@PostMapping(path = "/message")
 	public ResponseEntity<Message> message(
@@ -91,6 +111,21 @@ public class MessageResource {
 			){
 		token = token.substring(1, token.length()-1);
 		User user = userService.findByToken(token);
+		User prest = userService.findOne(id);
+		if(user !=null && prest !=null) {
+			Message mess = add(new Message(user, prest, text));
+			return ResponseEntity.ok(mess);
+		}
+		return ResponseEntity.badRequest().build();
+	}
+	
+	@PostMapping(path = "/m")
+	public ResponseEntity<Message> newMessage(
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestParam Long id,
+			@RequestParam String text
+			){
+		User user = userService.socialLogin(principal);
 		User prest = userService.findOne(id);
 		if(user !=null && prest !=null) {
 			Message mess = add(new Message(user, prest, text));

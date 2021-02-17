@@ -211,6 +211,19 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
+	//LISTA DE CONTATOS
+	@GetMapping("/u/c")
+	public ResponseEntity<List<User>> getUserContacts(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("id") Long id
+			) {
+		User user = userService.socialLogin(principal);
+		if( user != null){
+			return ResponseEntity.ok(userService.findContacts(user));
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
 	@GetMapping("/user/{id}/contacts")
 	public ResponseEntity<List<User>> getContacts(
 			@PathVariable("id") Long id,

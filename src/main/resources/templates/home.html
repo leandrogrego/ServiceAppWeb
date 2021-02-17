@@ -5,16 +5,14 @@
     <meta charset="utf-8"/>
 </head>
 <body>
-	<section layout:fragment="corpo" class="layout-content bg-primary d-flex flex-wrap justify-content-center" style="height: 100%; width:100%; backgorund-color: blue">
-		<main role="main" class="col-12 h-100 d-inline-block d-flex align-items-stretc" style="height: 100%">
-			<div class="bg-dark col-12 h-100 d-inline-block" style="border-radius:50; height: 100%;">
-				<div class="col-12 btn-success btn-outline-light" onclick="listServicos()">
-					<h3 class="text-center">Serviços</h3>
-				</div>
+	<section layout:fragment="corpo" class="layout-content d-flex flex-wrap justify-content-center" style="height: 100%; width:100%; backgorund-color: blue">
+		<main role="main" class="col-12 h-100 d-inline-block d-flex align-items-end flex-column" style="height: 100%">
+			<div class="bg-dark col-12 h-100 d-inline-block align-items-stretch " style="border-radius:50; height: 100%;">
 				<div id="listaServicos" class="col-12">
 					
 				</div>
 				<script type="text/javascript">
+					
 					function geraBotaoServico(servico){
 						return'<button onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
 							servico.name + '</button>';
@@ -25,7 +23,7 @@
 						$("#listaServicos").append(botao);
 					}
 					
-					function listServicos(){							
+					function loadServicos(){							
 						$.get("/api/servicos", function(servicos) {
 							$("#listaServicos").html('');
 							servicos.forEach(addServico);
@@ -34,26 +32,22 @@
 						
 					}					
 				</script>
-				<div class="col-12 btn-warning btn-outline-light" onclick="show('listaPrestadores')">
-					<h3 class="text-center">Prestadires</h3>
-				</div>
-				<div id="listaPrestadores" class="col-12" >
+
+				<div id="listaPrestadores" class="col-12 text-light" >
 				
 				</div>
 				<script type="text/javascript">
 					function geraBotaoPrrestador(prestador){
-						return'<button class="btn btn-secondary btn-outline-warning text-light">'+
+						return'<button onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
 						'<img width=20 src="'+prestador.avatar_url+'"> '+prestador.name + '</button>';
 					}
 					
 					function addPrestador(prestador){
 						var botao = geraBotaoPrrestador(prestador);
-						$("#listaPrestadores").empty();
 						$("#listaPrestadores").append(botao);
 					}
 					
 					function loadPrestadores(servicoId, servicoName){
-						
 						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(prestadores) {
 							$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
 							prestadores.forEach(addPrestador);
@@ -62,9 +56,97 @@
 						;
 					}
 				</script>
-				<div class="col-12 btn-secondary btn-outline-light" onclick="loadMyServicos()">
-					<h3 class="text-center">Meus Serviços</h3>
-				</div>
+				
+				<div id="Mensagens" class="col-12 text-light p-0" >
+					
+					<div id="titleMensagens" class="col-12 d-block bg-primary text-light fixed-top-60 p-1 mt-60" >
+					
+					</div>
+					<div id="listaMensagens" class="col-12 d-inline-block text-dark overflow-aut align-content-end" >
+					
+					</div>
+					<div id="enviaMensagens" class="col-12 text-light row p-2 fixed-bottom" >
+						<input id="inputMensagem" type="text" value="" class="form-control col-9">
+						<button id="buttonMensagem" value="" onclick="sendMensagem()" class="btn btn-success col-3">Enviar</button>
+					</div>	
+				</div>				
+				<script>
+					function geraMensagen(mensagem){
+						var color;
+						if(mensagem.ready){
+							color = 'primary';
+						} else if(mensagem.delivery){
+							color = 'success';
+						} else {
+							color = 'light';
+						}
+						var divdate = '<div class="text-1 text-'+color+'">'+mensagem.created.substring(11,16)+'<div>'
+						var fromAvatar = '<img src="'+mensagem.from.avatar_url+'" style="border-radius: 50%; height: 40px">';
+						if(mensagem.from.id == user.id){
+							return '<div class="d-flex justify-content-end text-dark"><div class="bg-info m-1 p-2" style="border-radius: 20px">'+mensagem.text+'</div>'+fromAvatar+divdate+'</div>';
+						} else {
+							return '<div class="d-flex justify-content-start text-dark">'+fromAvatar+'<div class="bg-light m-1 p-2" style="border-radius: 20px">'+mensagem.text+'</div>'+divdate+'</div>';	
+						}
+					}
+					
+					function criaRotuloData(date){
+						var dia = date.substring(8,10);
+						var mes = date.substring(5,7);
+						var ano = date.substring(0,4);
+						date = dia+'/'+mes+'/'+ano;
+						return '<div class="mx-auto text-light m-2 col-12 bg-secondary">'+date+'</dov>'
+					}
+					
+					function addMensagem(mensagem, data){
+						var div = geraMensagen(mensagem);
+						$("#listaMensagens").append(div);
+					}
+					
+					function loadMensagens(prestadorId, pretadorName){
+						$.get("api/m/p/"+prestadorId, function(mensagens) {
+							$("#titleMensagens").html('<h5>'+pretadorName+'</h5>');
+							$("#listaMensagens").html('');
+							$("#buttonMensagem").val(prestadorId);
+							var data;
+							for(var i=0; i<mensagens.length; i++){
+								var created = mensagens[i].created.substring(0,10);
+								if(data != created){
+									var rotuloData = criaRotuloData(created);
+									$("#listaMensagens").append(rotuloData); 
+									data = created;
+								}
+								addMensagem(mensagens[i]);
+							}
+							data = 
+							show("Mensagens")
+							$("#inputMensagem").focus();
+							console.log(mensagens.length)
+						})
+					}
+					
+					function loopMensagens(){
+						if(
+								$("#listaMensagem").is(":visible") &&
+								($("#buttonMensagem").val()!= '' || 0 || null)
+							){
+							loadMensagens($("#buttonMensagem").val(), null)
+						}
+					}
+					
+					
+					function sendMensagem(){
+						var mens = $('#inputMensagem').val();
+						var prestadorId = $('#buttonMensagem').val();
+						$.post(
+							"api/m", 
+							{ text : mens, id : prestadorId}, 
+							function(mensagem){
+								addMensagem(mensagem)
+							}
+						)
+					}
+				</script>
+
 				<div id="listaMeusServicos" class="row ol-12 text-light">
 					<div class="col-6 bg-success" >
 						Serviços Disponíveis
@@ -72,11 +154,10 @@
 					<div class="col-6 bg-warning">
 						Serviços Adicionados
 					</div>
-					<div id="noservicos" class="col-6 bg-success align-items-stretc">
+					<div id="noservicos" class="col-6 btn-outline-success m-2 p-1" style="align: center">
 					</div>
 					
-					<div id="myservicos" class="col-6 bg-warning align-items-stretc">
-						
+					<div id="myservicos" class="col-6 btn-outline-warning m-2 p-1">
 					</div>
 				</div>
 				<script type="text/javascript">
@@ -136,21 +217,24 @@
 						show("listaMeusServicos");
 					}
 					
-					function getuser(){
-						return get("/api/u", function(user) {
-							return user;
+					function getUser(){
+						$.get("api/u", function(u) {
+							user = u;
 						});
+						return(user)
 					}
 					
 					function show(div){
 						$("#listaServicos").hide();
 						$("#listaPrestadores").hide();
 						$("#listaMeusServicos").hide();
+						$("#Mensagens").hide();
 						$('#'+div).show();
-						$('#'+div+'Label').show();
 					}
-					
-					listServicos()
+					var user;
+					getUser();					
+					loadServicos();
+					setInterval(loopMensagens, 10000);
 				</script>
 			</div>
 		</main>
