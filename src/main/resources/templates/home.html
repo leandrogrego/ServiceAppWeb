@@ -8,8 +8,18 @@
 	<section layout:fragment="corpo" class="layout-content d-flex flex-wrap justify-content-center" style="height: 100%; width:100%; backgorund-color: blue">
 		<main role="main" class="col-12 h-100 d-inline-block d-flex align-items-end flex-column" style="height: 100%">
 			<div class="bg-dark col-12 h-100 d-inline-block align-items-stretch " style="border-radius:50; height: 100%;">
-				<div id="listaServicos" class="col-12">
+				<div id="Servicos" class="col-12 p-0" style="display: none">
+					<div id="listaServicos" class="col-12">
 					
+					</div>
+					<div class="col-12 text-light row p-2 fixed-bottom" >
+						<input id="FilterServico" type="text" onkeyup="filterServicos(this.value)" value="" class="form-control col-9">
+						<button id="buttonServico" value="" class="btn btn-success col-3">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+						  		<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+							</svg>
+						</button>
+					</div>	
 				</div>
 				<script type="text/javascript">
 					
@@ -24,17 +34,37 @@
 					}
 					
 					function loadServicos(){							
-						$.get("/api/servicos", function(servicos) {
+						$.get("/api/servicos", function(serv) {
+							servicos = serv;
 							$("#listaServicos").html('');
 							servicos.forEach(addServico);
-							show("listaServicos");
+							show("Servicos");
 						});
-						
-					}					
+					}
+					
+					function filterServicos(text){
+						var find = false;
+						$("#listaServicos").html('');
+						servicos.forEach(function(s){
+							if(s.name.toLowerCase().indexOf(text.toLowerCase()) > -1){
+								addServico(s); 								
+							};
+						});
+					}
 				</script>
 
-				<div id="listaPrestadores" class="col-12 text-light" >
-				
+				<div id="Prestadores" class="col-12 text-light p-0" style="display: none">
+					<div id="listaPrestadores" class="col-12 text-light" >
+					
+					</div>
+					<div class="col-12 text-light row p-2 fixed-bottom" >
+						<input id="FilterServico" type="text" onkeyup="filterPrestadores(this.value)" value="" class="form-control col-9">
+						<button id="buttonServico" value="" class="btn btn-success col-3">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+						  		<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+							</svg>
+						</button>
+					</div>	
 				</div>
 				<script type="text/javascript">
 					function geraBotaoPrrestador(prestador){
@@ -48,21 +78,40 @@
 					}
 					
 					function loadPrestadores(servicoId, servicoName){
-						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(prestadores) {
+						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(contatos) {
+							prestadores = contatos;
 							$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
-							prestadores.forEach(addPrestador);
-							show("listaPrestadores")
+							contatos.forEach(addPrestador);
+							show("Prestadores");
 						});
-						;
+					}		
+					
+					function filterPrestadores(text){
+						var find = false;
+						$("#listaPrestadores").html('');
+						prestadores.forEach(function(p){
+							if(p.name.toLowerCase().indexOf(text.toLowerCase()) > -1){
+								addPrestador(p); 								
+							};
+						});
 					}
+					
+					function loadContatos(){
+						$.get("/api/u/c", function(contatos) {
+							prestadores = contatos;
+							$("#listaPrestadores").html('<h4>Meus Contatos</h4>');
+							contatos.forEach(addPrestador);
+							show("Prestadores");
+						});
+					}			
 				</script>
 				
-				<div id="Mensagens" class="col-12 text-light p-0" >
+				<div id="Mensagens" class="col-12 text-light p-0 m-0 fixed-top w-100 h-100" style="display: none">
 					
-					<div id="titleMensagens" class="col-12 d-block bg-primary text-light fixed-top-60 p-1 mt-60" >
-					
+					<div class="col-12 d-block bg-primary text-light fixed-top-60 p-1 mt-60" >
+						<h4 class="btn btn-outline-warning float-left" onclick="loadServicos();"><<</h4><h5 id="titleMensagens"></h5>
 					</div>
-					<div id="listaMensagens" class="col-12 d-inline-block text-dark overflow-aut align-content-end" >
+					<div id="listaMensagens" class="col-12 d-inline-block text-dark h-80 overflow-auto align-content-end">
 					
 					</div>
 					<div id="enviaMensagens" class="col-12 text-light row p-2 fixed-bottom" >
@@ -102,9 +151,9 @@
 						$("#listaMensagens").append(div);
 					}
 					
-					function loadMensagens(prestadorId, pretadorName){
+					async function loadMensagens(prestadorId, pretadorName){
 						$.get("api/m/p/"+prestadorId, function(mensagens) {
-							$("#titleMensagens").html('<h5>'+pretadorName+'</h5>');
+							$("#titleMensagens").html(pretadorName	);
 							$("#listaMensagens").html('');
 							$("#buttonMensagem").val(prestadorId);
 							var data;
@@ -117,19 +166,18 @@
 								}
 								addMensagem(mensagens[i]);
 							}
-							data = 
 							show("Mensagens")
 							$("#inputMensagem").focus();
-							console.log(mensagens.length)
 						})
+						
 					}
 					
 					function loopMensagens(){
-						if(
-								$("#listaMensagem").is(":visible") &&
-								($("#buttonMensagem").val()!= '' || 0 || null)
-							){
-							loadMensagens($("#buttonMensagem").val(), null)
+						var PrestadorName = $("#titleMensagens").html();
+						var PrestadorId = $("#buttonMensagem").val();
+						var div = $("#listaMensagem"); 
+						if(loop){
+							loadMensagens(PrestadorId, PrestadorName);
 						}
 					}
 					
@@ -147,17 +195,17 @@
 					}
 				</script>
 
-				<div id="listaMeusServicos" class="row ol-12 text-light">
+				<div id="listaMeusServicos" class="row ol-12 text-light" style="display: none">
 					<div class="col-6 bg-success" >
 						Serviços Disponíveis
 					</div>
 					<div class="col-6 bg-warning">
 						Serviços Adicionados
 					</div>
-					<div id="noservicos" class="col-6 btn-outline-success m-2 p-1" style="align: center">
+					<div id="noservicos" class="col-6 p-2 border border-success">
 					</div>
 					
-					<div id="myservicos" class="col-6 btn-outline-warning m-2 p-1">
+					<div id="myservicos" class="col-6 p-2 border border-warning">
 					</div>
 				</div>
 				<script type="text/javascript">
@@ -225,13 +273,21 @@
 					}
 					
 					function show(div){
-						$("#listaServicos").hide();
-						$("#listaPrestadores").hide();
+
+						$("#Servicos").hide();
+						$("#Prestadores").hide();
 						$("#listaMeusServicos").hide();
 						$("#Mensagens").hide();
 						$('#'+div).show();
+						if(div == 'Mensagens') {loop = true} else {loop = false};
 					}
-					var user;
+					
+					function sleep( sleepDuration ){
+					  var now = new Date().getTime();
+					  while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
+					}
+					
+					var user, servicos, servico, prestadores, prestador, loop=false;
 					getUser();					
 					loadServicos();
 					setInterval(loopMensagens, 10000);

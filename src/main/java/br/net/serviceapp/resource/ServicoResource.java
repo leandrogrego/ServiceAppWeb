@@ -1,10 +1,12 @@
-package br.net.serviceapp.resource;
+	package br.net.serviceapp.resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,14 +61,17 @@ public class ServicoResource {
 	
 	@GetMapping("/servico/{id}/prestadores")
 	public ResponseEntity<List<User>> getPrestadores(
+			@AuthenticationPrincipal OAuth2User principal,
 			@PathVariable("id") Long id,
 			@RequestParam double latitude,
 			@RequestParam double longitude,
 			@RequestParam double distancia
 			) {
+		User user = userService.socialLogin(principal);
 		Servico servico = servicoService.findOne(id);
 		if(servico != null){
 			List<User> users = userService.filterDistance(servico.getUsers(), latitude, longitude, distancia);
+			users.remove(user);
 			return ResponseEntity.ok(users);
 		}
 		return ResponseEntity.notFound().build();
