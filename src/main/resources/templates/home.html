@@ -12,7 +12,7 @@
 					<div id="listaServicos" class="col-12">
 					
 					</div>
-					<div class="col-12 text-light row p-2 fixed-bottom" >
+					<div class="col-12 text-light row p-2 fixed-bottom" style="bottom: 20px">
 						<input id="FilterServico" type="text" onkeyup="filterServicos(this.value)" value="" class="form-control col-9">
 						<button id="buttonServico" value="" class="btn btn-success col-3">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -57,16 +57,31 @@
 					<div id="listaPrestadores" class="col-12 text-light" >
 					
 					</div>
-					<div class="col-12 text-light row p-2 fixed-bottom" >
-						<input id="FilterServico" type="text" onkeyup="filterPrestadores(this.value)" value="" class="form-control col-9">
-						<button id="buttonServico" value="" class="btn btn-success col-3">
+					
+					<div class="col-12 text-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
+						<div class="col-12 ml-2 mr-2">
+							<input id="ex1" onmouseup="loadPrestadores(servico.id, servico.name)" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="20"/>
+						</div>
+						<input id="FilterServico" type="text" onkeyup="filterPrestadores(this.value)" value="" class="form-control col-10">
+						<button id="buttonServico" value="" class="btn btn-success col-2">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
 						  		<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
 							</svg>
 						</button>
-					</div>	
+						
+					</div>
+					
 				</div>
 				<script type="text/javascript">
+				
+					// Without JQuery
+					var slider = new Slider('#ex1', {
+						formatter: function(value) {
+							return value+'km';
+						}
+					});
+					
+					//BOTÃO PRESTADOR
 					function geraBotaoPrrestador(prestador){
 						return'<button onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
 						'<img width=20 src="'+prestador.avatar_url+'"> '+prestador.name + '</button>';
@@ -78,7 +93,8 @@
 					}
 					
 					function loadPrestadores(servicoId, servicoName){
-						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia=100000000", function(contatos) {
+						var distancia=$("#ex1").val();
+						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia="+distancia, function(contatos) {
 							prestadores = contatos;
 							$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
 							contatos.forEach(addPrestador);
@@ -106,15 +122,15 @@
 					}			
 				</script>
 				
-				<div id="Mensagens" class="col-12 text-light p-0 m-0 fixed-top w-100 h-100" style="display: none">
+				<div id="Mensagens" class="col-12 text-light p-3 m-0 fixed-top w-100 h-75 overflow-auto" style="display: none; top:90px; button:80px">
 					
-					<div class="col-12 d-block bg-primary text-light fixed-top-60 p-1 mt-60" >
-						<h4 class="btn btn-outline-warning float-left" onclick="loadServicos();"><<</h4><h5 id="titleMensagens"></h5>
+					<div class="col-12 d-block bg-primary text-light fixed-top p-1" style="top:60px">
+						<h4 class="btn btn-light btn-outline-warning float-left" onclick="show('Prestadores');"><<</h4><h5 id="titleMensagens"></h5>
 					</div>
-					<div id="listaMensagens" class="col-12 d-inline-block text-dark h-80 overflow-auto align-content-end">
+					<div id="listaMensagens" class="col-12 d-inline-block text-dark h-80 p-1 align-content-end">
 					
 					</div>
-					<div id="enviaMensagens" class="col-12 text-light row p-2 fixed-bottom" >
+					<div id="enviaMensagens" class="col-12 text-light row border-solid-2 fixed-bottom" style="bottom: 20px">
 						<input id="inputMensagem" type="text" value="" class="form-control col-9">
 						<button id="buttonMensagem" value="" onclick="sendMensagem()" class="btn btn-success col-3">Enviar</button>
 					</div>	
@@ -167,6 +183,8 @@
 								addMensagem(mensagens[i]);
 							}
 							show("Mensagens")
+							$("#listaMensagens").append('<a name="lastMensagem" />');
+							location.href="#lastMensagem";
 							$("#inputMensagem").focus();
 						})
 						
