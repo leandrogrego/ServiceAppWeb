@@ -16,20 +16,20 @@
     <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js" integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.js" integrity="sha512-tCkLWlSXiiMsUaDl5+8bqwpGXXh0zZsgzX6pB9IQCZH+8iwXRYfcCpdxl/owoM6U4ap7QZDW4kw7djQUiQ4G2A==" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.css" integrity="sha512-SZgE3m1he0aEF3tIxxnz/3mXu/u/wlMNxQSnE0Cni9j/O8Gs+TjM9tm1NX34nRQ7GiLwUEzwuE3Wv2FLz2667w==" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css" integrity="sha512-3q8fi8M0VS+X/3n64Ndpp6Bit7oXSiyCnzmlx6IDBLGlY5euFySyJ46RUlqIVs0DPCGOypqP8IRk/EyPvU28mQ==" crossorigin="anonymous" />
-    <style>
-	    $("#ex4").slider({
-			reversed : true
-		});
-    	#ex1Slider .slider-selection {
-			background: #BABABA;
-		}
-    </style>
 </head>
 <body style="margin:0; height: 100%;" class="d-flex flex-wrap justify-content-center">
+	<table style="width:100%; height:100%"><tr style="height:60px"><td>
+		<div style="width:100%; height:60px"></div>
+	</td></tr><tr><td>
+		<section layout:fragment="corpo" class="layout-content bg-primary col-12 h-100 d-inline-block  flex-fill d-flex align-items-stretc" style="margin:0; height: 100%;">
+			<div>conteudo principal das páginas</div>
+		</section>		
+	</td></tr><tr style="height:60px"><td>
+		<footer th:replace="fragments/footer :: rodape">
+			<div>footer</div>
+		</footer>
+		<span th:replace="fragments/modal-confirm :: modal-confirm"></span>
+	</td></tr></table>
 	<header th:fragment="cabecalho">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-light"> 
 			<a class="navbar-brand" href="/">
@@ -48,7 +48,7 @@
 	        	<a onclick="loadServicos()" class="btn btn-success btn-outline-light ">Serviços</a>
 	        	<a onclick="show('Prestadores')" class="btn btn-warning btn-outline-light">Prestadores</a>
 	        	<a onclick="loadContatos()" class="btn btn-primary btn-outline-light">Contatos</a>
-	        	<a onclick="loadMyServicos()" class="btn btn-danger mr-auto btn-outline-light">Meus Serviços</a>
+	        	
 	        	<button type="button"
 					class="btn btn-light dropdown-toggle dropdown-toggle-split"
 					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -59,24 +59,13 @@
 				</button>
 				<div class="dropdown-menu">
 					<h6 class="dropdown-header">Opções</h6>
-					<a class="dropdown-item" th:href="@{/admin/changepassword}"><i class="fas fa-edit"></i>Profile</a>
+					<a onclick="loadMyServicos()" class="btn btn-danger mr-auto btn-outline-light">Meus Serviços</a>
 					<a class="dropdown-item" th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Sair</a>
 				</div>
 			</div>
 		</nav>
 	</header>
-	<table style="width:100%; height:100%"><tr style="height:60px"><td>
-		<div style="width:100%; height:60px"></div>
-	</td></tr><tr><td>
-		<section layout:fragment="corpo" class="layout-content bg-primary col-12 h-100 d-inline-block  flex-fill d-flex align-items-stretc" style="margin:0; height: 100%;">
-			<div>conteudo principal das páginas</div>
-		</section>		
-	</td></tr><tr style="height:60px"><td>
-		<footer th:replace="fragments/footer :: rodape">
-			<div>footer</div>
-		</footer>
-		<span th:replace="fragments/modal-confirm :: modal-confirm"></span>
-	</td></tr></table>
+
 </body>
 <script type="text/javascript">
 	$.get("api/u", function(data) {

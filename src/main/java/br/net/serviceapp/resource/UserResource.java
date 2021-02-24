@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.net.serviceapp.model.Address;
+import br.net.serviceapp.model.Location;
 import br.net.serviceapp.model.Servico;
 import br.net.serviceapp.model.User;
 import br.net.serviceapp.service.ServicoService;
@@ -174,6 +175,18 @@ public class UserResource {
 			return ResponseEntity.ok(list);
 		}
 		return ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping("/u/l")
+	public ResponseEntity<Location> location(
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestBody Location location
+			){
+		User user = userService.socialLogin(principal);
+		user.setLocation(location);
+		System.out.println(location);
+		userService.save(user);
+		return ResponseEntity.ok(location);
 	}
 	
 	@DeleteMapping("/u/s/{servicoId}")

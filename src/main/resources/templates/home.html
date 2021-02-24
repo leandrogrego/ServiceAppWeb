@@ -60,7 +60,9 @@
 					
 					<div class="col-12 text-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
 						<div class="col-12 ml-2 mr-2">
-							<input id="ex1" onmouseup="loadPrestadores(servico.id, servico.name)" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="20"/>
+							<label class="form-label">Distância</label>
+							<input type="range" id="distancia" class="form-range" min="1" max="100" step="1" value="20" onChange="loadPrestadores(servico.id, servico.name)" onInput="$('#distanciaLabel').html(this.value)">
+							<span class="form-label" id="distanciaLabel">20</span>
 						</div>
 						<input id="FilterServico" type="text" onkeyup="filterPrestadores(this.value)" value="" class="form-control col-10">
 						<button id="buttonServico" value="" class="btn btn-success col-2">
@@ -73,14 +75,7 @@
 					
 				</div>
 				<script type="text/javascript">
-				
-					// Without JQuery
-					var slider = new Slider('#ex1', {
-						formatter: function(value) {
-							return value+'km';
-						}
-					});
-					
+									
 					//BOTÃO PRESTADOR
 					function geraBotaoPrrestador(prestador){
 						return'<button onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
@@ -93,14 +88,59 @@
 					}
 					
 					function loadPrestadores(servicoId, servicoName){
-						var distancia=$("#ex1").val();
-						$.get("/api/servico/"+servicoId+"/prestadores?latitude=0&longitude=0&distancia="+distancia, function(contatos) {
+						gps();
+						servico.id = servicoId;
+						servico.name = servicoName;
+						var distancia=$("#distancia").val();
+						console.log(distancia);
+						$.get("/api/servico/"+servicoId+"/prestadores?latitude="+position.latitude+"&longitude="+position.longitude+"&distancia="+distancia, function(contatos) {
 							prestadores = contatos;
 							$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
 							contatos.forEach(addPrestador);
 							show("Prestadores");
 						});
-					}		
+					}	
+					
+					function success(pos) {
+						var crd = pos.coords;			
+						$.ajax({
+				            url: 'api/u/l',
+				            type: 'post',
+				            dataType: 'json',
+				            contentType: 'application/json',
+				            success: function (loc) {
+				            	console.log('Sua posição atual é:');
+								console.log('Latitude : ' + loc.latitude);
+								console.log('Longitude: ' + loc.longitude);
+								console.log('Altitude: ' + loc.altitude);
+								console.log('Atualizada em: ' + loc.time);
+								position = loc;
+							},
+				            data: JSON.stringify({ 
+								time: new Date().getTime(),
+								bearing : null,
+								speed: crd.speed,
+								altitude: crd.altitude,
+								longitude: crd.longitude,
+								latitude: crd.latitude,
+								provider: ""
+							})
+				        });
+
+					};
+
+					function error(err) {
+						console.warn('ERROR(' + err.code + '): ' + err.message);
+					};
+				
+					function gps(){
+						var options = {
+							enableHighAccuracy: true,
+							timeout: 5000,
+							maximumAge: 0
+						};
+						navigator.geolocation.getCurrentPosition(success, error, options);
+					}
 					
 					function filterPrestadores(text){
 						var find = false;
@@ -125,7 +165,7 @@
 				<div id="Mensagens" class="col-12 text-light p-3 m-0 fixed-top w-100 h-75 overflow-auto" style="display: none; top:90px; button:80px">
 					
 					<div class="col-12 d-block bg-primary text-light fixed-top p-1" style="top:60px">
-						<h4 class="btn btn-light btn-outline-warning float-left" onclick="show('Prestadores');"><<</h4><h5 id="titleMensagens"></h5>
+						<h4 class="btn btn-light btn-outline-warning float-left mr-2" onclick="show('Prestadores');"><<</h4><h5 id="titleMensagens"></h5>
 					</div>
 					<div id="listaMensagens" class="col-12 d-inline-block text-dark h-80 p-1 align-content-end">
 					
@@ -305,10 +345,12 @@
 					  while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
 					}
 					
-					var user, servicos, servico, prestadores, prestador, loop=false;
+					var user, servicos, servico = {id:'', name:''}, prestadores, prestador, loop=false, position;
+					gps();
 					getUser();					
 					loadServicos();
 					setInterval(loopMensagens, 10000);
+					
 				</script>
 			</div>
 		</main>
