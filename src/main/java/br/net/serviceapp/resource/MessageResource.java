@@ -1,3 +1,4 @@
+
 package br.net.serviceapp.resource;
 
 import java.util.List;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.net.serviceapp.model.Message;
-import br.net.serviceapp.model.Servico;
 import br.net.serviceapp.model.User;
 import br.net.serviceapp.service.MessageService;
 import br.net.serviceapp.service.UserService;
@@ -39,11 +39,12 @@ public class MessageResource {
 		return null;
 	}
 
-	@GetMapping("/messages")
+	//LISTA DE MENSAGENS DE UM USURIO
+	@GetMapping("/m")
 	public ResponseEntity<List<Message>> listAll(
-			@RequestHeader("token") String token
+			@AuthenticationPrincipal OAuth2User principal
 		){
-		User user = userService.findByToken(token);
+		User user = userService.socialLogin(principal);
 		if(user != null ){
 			List<Message> messages = messageService.findByUser(user);
 			if(messages != null ){
@@ -53,7 +54,8 @@ public class MessageResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/message/{id}")
+	//MENSAGEM ESPECIFICA
+	@GetMapping("/m/{id}")
 	public ResponseEntity<Message> getMessage(
 			@PathVariable("id") Long id, 
 			@RequestHeader("token") String token
@@ -65,23 +67,6 @@ public class MessageResource {
 				message.getTo().getId() == user.getId() 
 			)){
 			return ResponseEntity.ok(message);
-		}
-		return ResponseEntity.notFound().build();
-	}
-	
-	@GetMapping("/message/prestador/{id}")
-	public ResponseEntity<List<Message>> getMessages(
-			@PathVariable("id") Long id,
-			@RequestHeader("token") String token
-			) {
-		token = token.substring(1, token.length()-1);
-		User user = userService.findByToken(token);
-		User prest = userService.findOne(id);
-		if(user != null && prest != null){
-			List<Message> messages = messageService.findByUser(user, prest);
-			if(messages != null ){
-				return ResponseEntity.ok(messages);
-			}
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -103,23 +88,8 @@ public class MessageResource {
 		return ResponseEntity.notFound().build();
 	}
 
-	@PostMapping(path = "/message")
-	public ResponseEntity<Message> message(
-			@RequestParam Long id,
-			@RequestParam String text,
-			@RequestHeader("token") String token
-			){
-		token = token.substring(1, token.length()-1);
-		User user = userService.findByToken(token);
-		User prest = userService.findOne(id);
-		if(user !=null && prest !=null) {
-			Message mess = add(new Message(user, prest, text));
-			return ResponseEntity.ok(mess);
-		}
-		return ResponseEntity.badRequest().build();
-	}
-	
-	@PostMapping(path = "/m")
+	//NOVA MENSAGEM
+	@PostMapping("/m")
 	public ResponseEntity<Message> newMessage(
 			@AuthenticationPrincipal OAuth2User principal,
 			@RequestParam Long id,
@@ -134,17 +104,17 @@ public class MessageResource {
 		return ResponseEntity.badRequest().build();
 	}
 	
-	@PutMapping(path = "/message")
+	
+	@PutMapping("/m")
 	public ResponseEntity<List<Message>> setRead(
-			@RequestBody List<Message> body,
-			@RequestHeader("token") String token
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestBody List<Message> body
 			){
-		token = token.substring(1, token.length()-1);
-		User prest = userService.findByToken(token);
-		System.out.println(body.toString());
-		if(prest !=null && body != null) {
+		User user = userService.socialLogin(principal);
+		//System.out.println(body.toString());
+		if(user !=null && body != null) {
 			body.forEach( mess -> {
-				if( prest.getId() == mess.getTo().getId()) {
+				if( user.getId() == mess.getTo().getId()) {
 					Message message = messageService.findOne(mess.getId());
 					if(message != null && message.getRead() == null) {
 						message.setRead();

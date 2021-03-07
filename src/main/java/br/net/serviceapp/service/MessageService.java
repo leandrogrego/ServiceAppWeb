@@ -1,12 +1,11 @@
 package br.net.serviceapp.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import br.net.serviceapp.job.Notifiication;
 import br.net.serviceapp.model.Message;
 import br.net.serviceapp.model.User;
 import br.net.serviceapp.repository.MessageRepository;
@@ -17,7 +16,19 @@ public class MessageService {
 	private MessageRepository repository;
 	
 	public Message save(Message message) {
-		return repository.save(message);
+		if(message.getId() == null) {
+			notify(message);
+		}
+		repository.save(message);
+		return message;
+	}
+	
+	public boolean notify(Message message) {
+		Notifiication notification = new Notifiication(message);
+		if(notification.success()) {
+			return true;
+		}
+		return false; 		
 	}
 	
 	public List<Message> findAll() {

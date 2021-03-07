@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
-	layout:decorate="~{layout2}" > 
+	layout:decorate="~{layout}" > 
 <head>
     <meta charset="utf-8"/>
 </head>
 <body>
 
-	<section class="layout-content" layout:fragment="corpo">
-	<div class="container text-warning form-dark p-2" 
-	style='hieght:100%; 
-	background-image: url("/images/background.jpg"); 
+	<section class="layout-content" layout:fragment="corpo" style="height:100%">
+	<div class="container text-light form-dark p-2" 
+	style='height:100%; 
+	background-image: url("/images/background.jpg");
+	background-color: #000; 
   	background-attachment: fixed;
   	background-position: center;
   	background-repeat: no-repeat;
-  	background-size: cover;'
-  	>
-		<h1>ServiceApp</h1>
+  	background-size: cover;
+  	'>
+		<h1 style='text-shadow: 3px 0 0 #440, -3px 0 0 #440, 0 3px 0 #440, 0 -3px 0 #440, 2px 2px #440, -2px -2px 0 #440, 2px -2px 0 #440, -2px 2px 0 #440;'>ServiceApp</h1>
 		<image align="center" class="col-4 m-2 float-right" src="/images/logo.png" />
 		<div class="w-100">
+			<div style='text-shadow: 3px 0 0 #440, -3px 0 0 #440, 0 3px 0 #440, 0 -3px 0 #440, 2px 2px #440, -2px -2px 0 #440, 2px -2px 0 #440, -2px 2px 0 #440;'>
 			ServiceApp é uma plataforma gratuita de comunicação para localização e contratação de prestação de serviço. 
 			<li>Encontre profissionais próximos de você e solicite um serviço.</li>
 			<li>Facilidade e rapidez no atendimento de todos os tipos de necessidade.</li>
-			<p></p><p></p><p></p>
+			</div><p></p><p></p>
 			<div class="row w-100">
-				<div class="col-12 d-flex justify-content-center">
+				<div class="col-12 d-flex justify-content-center"  style='text-shadow: 3px 0 0 #440, -3px 0 0 #440, 0 3px 0 #440, 0 -3px 0 #440, 2px 2px #440, -2px -2px 0 #440, 2px -2px 0 #440, -2px 2px 0 #440;'>
 					Conectar com:
 				</div>
 				<div class="col-12 d-flex justify-content-center">

@@ -1,8 +1,5 @@
 package br.net.serviceapp;
 
-
-import java.security.Security;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
@@ -27,7 +24,7 @@ public class ServiceAppWebApplication extends WebSecurityConfigurerAdapter {
     	// @formatter:off
         http
             .authorizeRequests(a -> a
-                .antMatchers("/", "/error", "/webjars/**", "/images/**", "/logout").permitAll()
+                .antMatchers("/", "/error", "/webjars/**", "/images/**", "/logout", "/webpushr-sw.js").permitAll()
                 .anyRequest().authenticated()
             )
             .logout(l -> l

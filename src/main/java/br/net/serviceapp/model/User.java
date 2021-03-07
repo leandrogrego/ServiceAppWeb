@@ -42,10 +42,14 @@ public class User implements Serializable {
 	private Long id;
 	
 	@Column
+	private boolean enabled = true;
+	
+	@Column
 	private String type = "user";
 
 	@Column
 	private String socialId;
+	
 	@Column
 	private String provider;
 	
@@ -77,6 +81,10 @@ public class User implements Serializable {
 	
 	@Column
 	private Date created = new Date();
+	
+	@JsonIgnore
+	@Column
+	private String pushId;
 
 	@JsonIgnore
 	@Column
@@ -106,7 +114,7 @@ public class User implements Serializable {
     	inverseJoinColumns={@JoinColumn(name="servico_id")})
 	private List<Servico> servicos = new ArrayList<>();
 
-	private boolean enabled = true;
+	private double distancia;
 	
 	public String getName() {
 		return name;
@@ -263,6 +271,22 @@ public class User implements Serializable {
 	
 	public void setEnabled(boolean b) {
 		this.enabled = b;
+	}
+
+	public void setDistancia(double distancia) {
+		this.distancia = distancia;
+	}
+	
+	public double getDistancia() {
+		return distancia;
+	}
+	
+	public String getPushId() {
+		return pushId;
+	}
+
+	public void setPushId(String pushId) {
+		this.pushId = pushId;
 	}
 
 }

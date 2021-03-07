@@ -33,12 +33,24 @@ spring:
           google:
             clientId: <CLIENT ID>
             clientSecret: <CLIENT SECRET>
+            redirectUri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - email
+              - profile
           github:
             clientId: <CLIENT ID>
             clientSecret: <CLIENT SECRET>
+            redirectUri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - user:email
+              - read:user
           facebook:
             clientId: <CLIENT ID>
             clientSecret: <CLIENT SECRET>
+            redirectUri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - email
+              - public_profile
       
   jackson:
     serialization:

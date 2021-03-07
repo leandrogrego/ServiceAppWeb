@@ -1,14 +1,11 @@
 package br.net.serviceapp.resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -53,31 +50,23 @@ public class UserResource {
     	return ResponseEntity.ok(user);
     }
     
-	@GetMapping("/user")
-	public ResponseEntity<List<User>> listAll(
-			@RequestHeader("token") String token
-			) {
-		User user = userService.findByToken(token);
-		if(user != null && user.getPerfil() == 0){
-			return ResponseEntity.ok(userService.findAll());
-		}
-		return ResponseEntity.badRequest().build();
-	}
-	
-	@GetMapping("/users")
+	@GetMapping("/us")
 	public ResponseEntity<List<User>> userPublic(
+			@AuthenticationPrincipal OAuth2User principal,
 			@RequestParam double latitude,
 			@RequestParam double longitude,
 			@RequestParam double distancia
 	) {
+		User user = userService.socialLogin(principal);
 		List<User> users = userService.filterDistance(userService.findAllPublic(), latitude, longitude, distancia);		
-		if(users != null){
+		if(user != null && users != null){
+			users.remove(user);
 			return ResponseEntity.ok(users);
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/user/{id}")
+	@GetMapping("/u/{id}")
 	public ResponseEntity<User> getUser(
 			@PathVariable("id") Long id
 			) {
@@ -88,7 +77,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/user/{id}/servicos")
+	@GetMapping("/u/{id}/s")
 	public ResponseEntity<List<Servico>> getUserServicos(
 			@PathVariable("id") Long id
 			) {
@@ -121,7 +110,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PostMapping("/user/{id}/servicos")
+	@PostMapping("/u/{id}/s")
 	public ResponseEntity<List<Servico>> setUserServicos(
 			@PathVariable("id") Long id,
 			@RequestHeader("token") String token,
@@ -236,22 +225,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/user/{id}/contacts")
-	public ResponseEntity<List<User>> getContacts(
-			@PathVariable("id") Long id,
-			@RequestHeader("token") String token
-			) {
-		token = token.substring(1, token.length()-1);
-		User user = userService.findOne(id);
-		if( user != null &&
-			user.getToken().equals(token)
-			){
-			return ResponseEntity.ok(userService.findContacts(user));
-		}
-		return ResponseEntity.notFound().build();
-	}
-		
-	@GetMapping("/user/{id}/address")
+	@GetMapping("/u/{id}/a")
 	public ResponseEntity<Address> getUserAddress(
 			@PathVariable("id") Long id
 			) {
@@ -262,7 +236,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PutMapping("/user/{id}/address")
+	@PutMapping("/u/{id}/a")
 	public ResponseEntity<Address> setUserAddress(
 			@RequestHeader("token") String token,
 			@RequestBody Address address
@@ -276,7 +250,7 @@ public class UserResource {
 		return ResponseEntity.badRequest().build();
 	}
 
-	@GetMapping("/user/{id}/photo")
+	@GetMapping("/u/{id}/p")
 	public ResponseEntity<String> getUserPhoto(
 			@PathVariable("id") Long id
 			) {
@@ -287,7 +261,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PutMapping("/user/{id}/photo")
+	@PutMapping("/u/{id}/p")
 	public ResponseEntity<String> setUserPhoto(
 			@RequestHeader("token") String token,
 			@RequestBody String photo
@@ -301,7 +275,7 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@DeleteMapping("/user/{id}/photo")
+	@DeleteMapping("/u/{id}/p")
 	public ResponseEntity<String> clenarUserPhoto(
 			@RequestHeader("token") String token
 			) {
@@ -311,7 +285,7 @@ public class UserResource {
 		return ResponseEntity.ok("");
 	}
 	
-	@PostMapping(path = "/user")
+	@PostMapping("/u")
 	public ResponseEntity<User> user(
 			@RequestBody User user
 			){
@@ -324,7 +298,7 @@ public class UserResource {
 		return ResponseEntity.ok(user);
 	}
 	
-	@PutMapping("/user")
+	@PutMapping("/u")
 	public ResponseEntity<User> change(
 			@RequestBody User body,
 			@RequestHeader("token") String token
@@ -344,7 +318,7 @@ public class UserResource {
 		return ResponseEntity.status(403).build();
 	}
 	
-	@PatchMapping("/user")
+	@PatchMapping("/u")
 	public ResponseEntity<Token> token(
 			@RequestParam(value="number", required=true) String number,
 			@RequestParam(value="code", required=true) int code,
@@ -371,6 +345,17 @@ public class UserResource {
 			}
 		}
 		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/u/push/{sid}")
+	public ResponseEntity<String> sid(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("sid") String sid
+			){
+		User user = userService.socialLogin(principal);
+		user.setPushId(sid);
+		userService.save(user);
+		return	ResponseEntity.ok(user.getPushId());
 	}
 }
 

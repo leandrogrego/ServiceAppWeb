@@ -34,12 +34,12 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 		createServico("Lavadeira", "Lavação de roupas em geral");
 		createServico("Manicure e Pedicure", "Manicure e Pedicure");
 		createServico("Pedreiro", "Construção e obras.");
-		Servico servico = createServico("Programador", "Desenvolvimento de programas de computador.");
+		//Servico servico = createServico("Programador", "Desenvolvimento de programas de computador.");
 		//User user = createUser("Leandro Rego", "+5584994331500", "leandrogrego@gmail.com", "Rua José Holanda Pinto", "105", "São Benedito", "", "Pau dos Ferros", "RN", "59.900-000", "Brasil");
 		//user.addServico(servico);
 		//userService.save(user);
 		//System.out.println(user.getId()+" : "+user.getToken());
-		System.out.println("----- Users created Successful! -----");
+		//System.out.println("----- Users created Successful! -----");
 	}
 
 	private User createUser(String name, String number, String email, String logradouro, String numero, String bairro, String complemento, String cidade, String estado, String cep, String pais) {

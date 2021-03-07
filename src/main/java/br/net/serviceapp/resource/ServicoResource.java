@@ -1,4 +1,4 @@
-	package br.net.serviceapp.resource;
+package br.net.serviceapp.resource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class ServicoResource {
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/servicos")
+	@GetMapping("/s")
 	public ResponseEntity<List<Servico>> listAll() {
 		List<Servico> servicos = servicoService.findAll();
 		if(servicos != null){
@@ -48,7 +48,7 @@ public class ServicoResource {
 		return ResponseEntity.ok(new ArrayList<>());
 	}
 	
-	@GetMapping("/servico/{id}")
+	@GetMapping("/s/{id}")
 	public ResponseEntity<Servico> getServico(
 			@PathVariable("id") Long id
 			) {
@@ -59,7 +59,7 @@ public class ServicoResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/servico/{id}/prestadores")
+	@GetMapping("/s/{id}/p")
 	public ResponseEntity<List<User>> getPrestadores(
 			@AuthenticationPrincipal OAuth2User principal,
 			@PathVariable("id") Long id,
@@ -76,7 +76,7 @@ public class ServicoResource {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	@PostMapping(path = "/servico")
+	@PostMapping(path = "/s")
 	public ResponseEntity<Servico> servico(
 			@RequestBody Servico body,
 			@RequestHeader("token") String token

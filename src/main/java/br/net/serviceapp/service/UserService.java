@@ -35,28 +35,29 @@ public class UserService {
 	}
 	
 	public User socialLogin(OAuth2User principal) {
+		System.out.println(principal);
 		String provider = "facebook";
 		String nameLabel = "name";
 		String emailLabel = "email";
 		String idLabel = "id";
-		String avatar_urlLabel = "email";
+		String avatar_url = "https://graph.facebook.com/"+principal.getAttribute("id")+"/picture?type=large";
 		String tokenLabel = "name";
 		
-		if(principal.getAttribute("node_id") != null) {
+		if(principal.getAttributes().toString().contains("https://github.com/")) {
     		provider="github";
     		nameLabel = "login";
     		emailLabel = "email";
     		idLabel = "id";
-    		avatar_urlLabel = "avatar_url";
+    		avatar_url = principal.getAttribute("avatar_url");
     		tokenLabel = "node_id";
     	}
     	
-    	if(principal.getAttribute("at_hash") != null) {
+		if(principal.getAuthorities().toString().contains("www.googleapis.com")) {
     		provider = "google";
     		nameLabel = "name";
     		emailLabel = "email";
     		idLabel = "sub";
-    		avatar_urlLabel = "picture";
+    		avatar_url = principal.getAttribute("picture");
     		tokenLabel = "at_hash";
     	}
     	
@@ -69,7 +70,7 @@ public class UserService {
     	}
     	user.setName(principal.getAttribute(nameLabel));
     	user.setEmail(principal.getAttribute(emailLabel));
-    	user.setAvatar_url(principal.getAttribute(avatar_urlLabel));
+    	user.setAvatar_url(avatar_url);
     	user.setToken(principal.getAttribute(tokenLabel));
     	save(user);
     	return repository.findBySocialIdAndProvider(socialId, provider);
@@ -130,16 +131,20 @@ public class UserService {
 		double latimin = latitude - (distance / 110.574657);
 		double longmax = longitude + (distance / 111.319892);
 		double longmin = longitude - (distance / 111.319892);
+		
 		usersIn.forEach( user -> {
 			
 			if(
-				user.getLocation() == null || (
-					user.getLocation().getLatitude() <= latimax &&
-					user.getLocation().getLatitude() >= latimin &&
-					user.getLocation().getLongitude() <= longmax &&
-					user.getLocation().getLongitude() >= longmin
-				)
+				user.getLocation() != null &&
+				user.getLocation().getLatitude() <= latimax &&
+				user.getLocation().getLatitude() >= latimin &&
+				user.getLocation().getLongitude() <= longmax &&
+				user.getLocation().getLongitude() >= longmin
 			) {
+				double x = user.getLocation().getLongitude() - longitude;
+				double y = user.getLocation().getLatitude() - latitude;
+				double d = Math.sqrt(x*x)+(y*y);
+				user.setDistancia(d);
 				usersOut.add(user);
 			}
 		});

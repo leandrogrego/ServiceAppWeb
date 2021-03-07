@@ -1,6 +1,7 @@
+
 <!DOCTYPE html>
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
-	layout:decorate="~{layout2}" > 
+	layout:decorate="~{layout}" > 
 <head>
     <meta charset="utf-8"/>
 </head>
@@ -12,247 +13,46 @@
 					<div id="listaServicos" class="col-12">
 					
 					</div>
-					<div class="col-12 text-light row p-2 fixed-bottom" style="bottom: 20px">
-						<input id="FilterServico" type="text" onkeyup="filterServicos(this.value)" value="" class="form-control col-9">
-						<button id="buttonServico" value="" class="btn btn-success col-3">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-						  		<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-							</svg>
-						</button>
-					</div>	
-				</div>
-				<script type="text/javascript">
-					
-					function geraBotaoServico(servico){
-						return'<button onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
-							servico.name + '</button>';
-					}
-					
-					function addServico(servico){
-						var botao = geraBotaoServico(servico);
-						$("#listaServicos").append(botao);
-					}
-					
-					function loadServicos(){							
-						$.get("/api/servicos", function(serv) {
-							servicos = serv;
-							$("#listaServicos").html('');
-							servicos.forEach(addServico);
-							show("Servicos");
-						});
-					}
-					
-					function filterServicos(text){
-						var find = false;
-						$("#listaServicos").html('');
-						servicos.forEach(function(s){
-							if(s.name.toLowerCase().indexOf(text.toLowerCase()) > -1){
-								addServico(s); 								
-							};
-						});
-					}
-				</script>
-
-				<div id="Prestadores" class="col-12 text-light p-0" style="display: none">
-					<div id="listaPrestadores" class="col-12 text-light" >
-					
-					</div>
-					
 					<div class="col-12 text-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
-						<div class="col-12 ml-2 mr-2">
-							<label class="form-label">Distância</label>
-							<input type="range" id="distancia" class="form-range" min="1" max="100" step="1" value="20" onChange="loadPrestadores(servico.id, servico.name)" onInput="$('#distanciaLabel').html(this.value)">
-							<span class="form-label" id="distanciaLabel">20</span>
-						</div>
-						<input id="FilterServico" type="text" onkeyup="filterPrestadores(this.value)" value="" class="form-control col-10">
+						<input id="FilterServico" type="text" onkeyup="filterServicos(this.value)" value="" class="form-control col-8">
 						<button id="buttonServico" value="" class="btn btn-success col-2">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
 						  		<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
 							</svg>
 						</button>
-						
-					</div>
-					
+					</div>	
 				</div>
-				<script type="text/javascript">
-									
-					//BOTÃO PRESTADOR
-					function geraBotaoPrrestador(prestador){
-						return'<button onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
-						'<img width=20 src="'+prestador.avatar_url+'"> '+prestador.name + '</button>';
-					}
+				<div id="Prestadores" class="col-12 p-0" style="display: none">
+					<div id="listaPrestadores" class="col-12 text-light mb-35" >
 					
-					function addPrestador(prestador){
-						var botao = geraBotaoPrrestador(prestador);
-						$("#listaPrestadores").append(botao);
-					}
-					
-					function loadPrestadores(servicoId, servicoName){
-						gps();
-						servico.id = servicoId;
-						servico.name = servicoName;
-						var distancia=$("#distancia").val();
-						console.log(distancia);
-						$.get("/api/servico/"+servicoId+"/prestadores?latitude="+position.latitude+"&longitude="+position.longitude+"&distancia="+distancia, function(contatos) {
-							prestadores = contatos;
-							$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
-							contatos.forEach(addPrestador);
-							show("Prestadores");
-						});
-					}	
-					
-					function success(pos) {
-						var crd = pos.coords;			
-						$.ajax({
-				            url: 'api/u/l',
-				            type: 'post',
-				            dataType: 'json',
-				            contentType: 'application/json',
-				            success: function (loc) {
-				            	console.log('Sua posição atual é:');
-								console.log('Latitude : ' + loc.latitude);
-								console.log('Longitude: ' + loc.longitude);
-								console.log('Altitude: ' + loc.altitude);
-								console.log('Atualizada em: ' + loc.time);
-								position = loc;
-							},
-				            data: JSON.stringify({ 
-								time: new Date().getTime(),
-								bearing : null,
-								speed: crd.speed,
-								altitude: crd.altitude,
-								longitude: crd.longitude,
-								latitude: crd.latitude,
-								provider: ""
-							})
-				        });
-
-					};
-
-					function error(err) {
-						console.warn('ERROR(' + err.code + '): ' + err.message);
-					};
-				
-					function gps(){
-						var options = {
-							enableHighAccuracy: true,
-							timeout: 5000,
-							maximumAge: 0
-						};
-						navigator.geolocation.getCurrentPosition(success, error, options);
-					}
-					
-					function filterPrestadores(text){
-						var find = false;
-						$("#listaPrestadores").html('');
-						prestadores.forEach(function(p){
-							if(p.name.toLowerCase().indexOf(text.toLowerCase()) > -1){
-								addPrestador(p); 								
-							};
-						});
-					}
-					
-					function loadContatos(){
-						$.get("/api/u/c", function(contatos) {
-							prestadores = contatos;
-							$("#listaPrestadores").html('<h4>Meus Contatos</h4>');
-							contatos.forEach(addPrestador);
-							show("Prestadores");
-						});
-					}			
-				</script>
-				
+					</div>
+					<div class="col-12 bg-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
+						<div class="col-12 ml-2 mr-2">
+							<label class="form-label">Distância</label>
+							<input type="range" id="distancia" alt="all" class="form-range" min="1" max="1000" step="1" value="20" onChange="this.alt == 'all' ? loadAllPrestadores() : loadPrestadores(servico.id, servico.name)" onInput="$('#distanciaLabel').html(this.value)">
+							<span class="form-label" id="distanciaLabel">20</span>
+						</div>
+						<input id="FilterPrestadores" type="text" onkeyup="filterPrestadores(this.value)" value="" class="form-control col-8">
+						<button id="buttonServico" value="" class="btn btn-success col-2 text-light">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+						  		<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+							</svg>
+						</button>
+					</div>
+				</div>
 				<div id="Mensagens" class="col-12 text-light p-3 m-0 fixed-top w-100 h-75 overflow-auto" style="display: none; top:90px; button:80px">
 					
 					<div class="col-12 d-block bg-primary text-light fixed-top p-1" style="top:60px">
 						<h4 class="btn btn-light btn-outline-warning float-left mr-2" onclick="show('Prestadores');"><<</h4><h5 id="titleMensagens"></h5>
 					</div>
-					<div id="listaMensagens" class="col-12 d-inline-block text-dark h-80 p-1 align-content-end">
+					<div id="listaMensagens" class="col-12 d-inline-block text-dark h-80 p-1 mb-25 align-content-end">
 					
 					</div>
-					<div id="enviaMensagens" class="col-12 text-light row border-solid-2 fixed-bottom" style="bottom: 20px">
-						<input id="inputMensagem" type="text" value="" class="form-control col-9">
-						<button id="buttonMensagem" value="" onclick="sendMensagem()" class="btn btn-success col-3">Enviar</button>
+					<div id="enviaMensagens" class="col-12 text-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
+						<input id="inputMensagem" type="text" value="" class="form-control col-8">
+						<button id="buttonMensagem" value="" onclick="sendMensagem()" class="btn btn-success col-2 p-1">Enviar</button>
 					</div>	
 				</div>				
-				<script>
-					function geraMensagen(mensagem){
-						var color;
-						if(mensagem.ready){
-							color = 'primary';
-						} else if(mensagem.delivery){
-							color = 'success';
-						} else {
-							color = 'light';
-						}
-						var divdate = '<div class="text-1 text-'+color+'">'+mensagem.created.substring(11,16)+'<div>'
-						var fromAvatar = '<img src="'+mensagem.from.avatar_url+'" style="border-radius: 50%; height: 40px">';
-						if(mensagem.from.id == user.id){
-							return '<div class="d-flex justify-content-end text-dark"><div class="bg-info m-1 p-2" style="border-radius: 20px">'+mensagem.text+'</div>'+fromAvatar+divdate+'</div>';
-						} else {
-							return '<div class="d-flex justify-content-start text-dark">'+fromAvatar+'<div class="bg-light m-1 p-2" style="border-radius: 20px">'+mensagem.text+'</div>'+divdate+'</div>';	
-						}
-					}
-					
-					function criaRotuloData(date){
-						var dia = date.substring(8,10);
-						var mes = date.substring(5,7);
-						var ano = date.substring(0,4);
-						date = dia+'/'+mes+'/'+ano;
-						return '<div class="mx-auto text-light m-2 col-12 bg-secondary">'+date+'</dov>'
-					}
-					
-					function addMensagem(mensagem, data){
-						var div = geraMensagen(mensagem);
-						$("#listaMensagens").append(div);
-					}
-					
-					async function loadMensagens(prestadorId, pretadorName){
-						$.get("api/m/p/"+prestadorId, function(mensagens) {
-							$("#titleMensagens").html(pretadorName	);
-							$("#listaMensagens").html('');
-							$("#buttonMensagem").val(prestadorId);
-							var data;
-							for(var i=0; i<mensagens.length; i++){
-								var created = mensagens[i].created.substring(0,10);
-								if(data != created){
-									var rotuloData = criaRotuloData(created);
-									$("#listaMensagens").append(rotuloData); 
-									data = created;
-								}
-								addMensagem(mensagens[i]);
-							}
-							show("Mensagens")
-							$("#listaMensagens").append('<a name="lastMensagem" />');
-							location.href="#lastMensagem";
-							$("#inputMensagem").focus();
-						})
-						
-					}
-					
-					function loopMensagens(){
-						var PrestadorName = $("#titleMensagens").html();
-						var PrestadorId = $("#buttonMensagem").val();
-						var div = $("#listaMensagem"); 
-						if(loop){
-							loadMensagens(PrestadorId, PrestadorName);
-						}
-					}
-					
-					
-					function sendMensagem(){
-						var mens = $('#inputMensagem').val();
-						var prestadorId = $('#buttonMensagem').val();
-						$.post(
-							"api/m", 
-							{ text : mens, id : prestadorId}, 
-							function(mensagem){
-								addMensagem(mensagem)
-							}
-						)
-					}
-				</script>
-
 				<div id="listaMeusServicos" class="row ol-12 text-light" style="display: none">
 					<div class="col-6 bg-success" >
 						Serviços Disponíveis
@@ -266,95 +66,11 @@
 					<div id="myservicos" class="col-6 p-2 border border-warning">
 					</div>
 				</div>
-				<script type="text/javascript">
-					function geraBotaoAddServico(servico){
-						return'<button onclick="addServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
-							servico.name + '</button>';
-					}
-					
-					function geraBotaoRemoveServico(servico){
-						return'<button onclick="remServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
-							servico.name + '</button>';
-					}
-					
-					function added(servico){
-						var botao = geraBotaoRemoveServico(servico);
-						$("#myservicos").append(botao);
-					}
-					
-					function notAdded(servico){
-						var botao = geraBotaoAddServico(servico);
-						$("#noservicos").append(botao);
-					}
-
-					function addServicos(id){
-						$.ajax({
-						    url: "/api/u/s/"+id,
-						    type: 'PUT',
-						    success: function(myservicos) {
-						    	$("#myservicos").html('');
-								$("#noservicos").html('');
-								myservicos[0].forEach(added);
-								myservicos[1].forEach(notAdded);
-						    }
-						});
-					}
-					
-					function remServicos(id){
-						$.ajax({
-						    url: "/api/u/s/"+id,
-						    type: 'DELETE',
-						    success: function(myservicos) {
-						    	$("#myservicos").html('');
-								$("#noservicos").html('');
-								myservicos[0].forEach(added);
-								myservicos[1].forEach(notAdded);
-						    }
-						});
-					}
-					
-					function loadMyServicos(){
-						$.get("/api/u/s", function(myservicos) {
-							$("#myservicos").html('');
-							$("#noservicos").html('');
-							myservicos[0].forEach(added);
-							myservicos[1].forEach(notAdded);
-						});
-						show("listaMeusServicos");
-					}
-					
-					function getUser(){
-						$.get("api/u", function(u) {
-							user = u;
-						});
-						return(user)
-					}
-					
-					function show(div){
-
-						$("#Servicos").hide();
-						$("#Prestadores").hide();
-						$("#listaMeusServicos").hide();
-						$("#Mensagens").hide();
-						$('#'+div).show();
-						if(div == 'Mensagens') {loop = true} else {loop = false};
-					}
-					
-					function sleep( sleepDuration ){
-					  var now = new Date().getTime();
-					  while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
-					}
-					
-					var user, servicos, servico = {id:'', name:''}, prestadores, prestador, loop=false, position;
-					gps();
-					getUser();					
-					loadServicos();
-					setInterval(loopMensagens, 10000);
-					
-				</script>
 			</div>
 		</main>
-	</section>
+		<script th:replace="fragments/scripts :: scripts"></span>
 
+		</script>
+	</section>
 </body>
 </html>
