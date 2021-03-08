@@ -54,6 +54,22 @@ public class MessageResource {
 		return ResponseEntity.notFound().build();
 	}
 	
+	//LISTA NOVAS MENSAGENS DE UM USUARIO
+	@GetMapping("/m/new/{messageId}")
+	public ResponseEntity<List<Message>> listNew(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("messageId") Long messageId 
+		){
+		User user = userService.socialLogin(principal);
+		if(user != null ){
+			List<Message> messages = messageService.findNewByUser(user, messageId);
+			if(messages != null ){
+				return ResponseEntity.ok(messages);
+			}
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
 	//MENSAGEM ESPECIFICA
 	@GetMapping("/m/{id}")
 	public ResponseEntity<Message> getMessage(
@@ -81,6 +97,24 @@ public class MessageResource {
 		User prest = userService.findOne(id);
 		if(user != null && prest != null){
 			List<Message> messages = messageService.findByUser(user, prest);
+			if(messages != null ){
+				return ResponseEntity.ok(messages);
+			}
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	//LISTA NOVAS MENSAGENS DE UM CONTATO
+	@GetMapping("/m/p/{prestId}/new/{messageId}")
+	public ResponseEntity<List<Message>> getNewMessagesPrestador(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("prestId") Long id,
+			@PathVariable("messageId") Long messageId
+			) {
+		User user = userService.socialLogin(principal);
+		User prest = userService.findOne(id);
+		if(user != null && prest != null){
+			List<Message> messages = messageService.findNewByUsers(user, prest, messageId);
 			if(messages != null ){
 				return ResponseEntity.ok(messages);
 			}

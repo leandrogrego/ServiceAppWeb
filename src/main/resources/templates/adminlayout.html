@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	th:with="version=${#strings.randomAlphanumeric(3)}"
+	style="margin:0; height: 100%;">	
+<head>
+<title>ServiceApp</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+	<script type="text/javascript">
+		$.ajaxSetup({
+	 		beforeSend : function(xhr, settings) {
+	 			if (settings.type == 'POST' || settings.type == 'PUT'
+	 	   	    	|| settings.type == 'DELETE') {
+		 	    	if (!(/^http:.*/.test(settings.url) || /^https:.*/
+		 	        .test(settings.url))) {
+		 	        // Only send the token to relative URLs i.e. locally.
+		 	        xhr.setRequestHeader("X-XSRF-TOKEN",
+		 	        	Cookies.get('XSRF-TOKEN'));
+		 			}
+	 	    	}
+			}
+		});
+	</script>
+</head>
+<body style="margin:0; height: 100%;" class="d-flex flex-wrap justify-content-center">
+	<table style="width:100%; height:100%"><tr style="height:60px"><td>
+		<div style="width:100%; height:60px"></div>
+	</td></tr><tr><td>
+		<section layout:fragment="corpo" class="layout-content bg-primary col-12 h-100 d-inline-block  flex-fill d-flex align-items-stretc" style="margin:0; height: 100%;">
+			<div>conteudo principal das páginas</div>
+		</section>		
+	</td></tr><tr style="height:60px"><td class="bg-light">
+		<footer th:replace="fragments/footer :: rodape">
+			<div>footer</div>
+		</footer>
+		<span th:replace="fragments/modal-confirm :: modal-confirm"></span>
+	</td></tr></table>
+	<header th:replace="fragments/adminheader :: cabecalho"></header>
+
+</body>
+</html>

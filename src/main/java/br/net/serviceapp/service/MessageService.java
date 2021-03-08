@@ -15,6 +15,7 @@ public class MessageService {
 	@Autowired
 	private MessageRepository repository;
 	
+	//SALVA MENSAGEM
 	public Message save(Message message) {
 		if(message.getId() == null) {
 			notify(message);
@@ -23,6 +24,7 @@ public class MessageService {
 		return message;
 	}
 	
+	//ENVIA NOTIFICACAO DE NOVA MENSAGEM
 	public boolean notify(Message message) {
 		Notifiication notification = new Notifiication(message);
 		if(notification.success()) {
@@ -31,6 +33,7 @@ public class MessageService {
 		return false; 		
 	}
 	
+	//TODAS AS MENSAGENS
 	public List<Message> findAll() {
 		return repository.findAll();
 	}
@@ -39,22 +42,37 @@ public class MessageService {
 		return repository.findById(id).get();
 	}
 	
+	//MESAGEM DE E PARA USUARIO ESPECIFICO
 	public List<Message> findByUser(User user){
 		return repository.findByUser(user.getId(), user.getId());
 	};
 	
+	//MESAGEM DE E PARA USUARIO ESPECIFICO COM ID MAIOR QUE startin 
+	public List<Message> findNewByUser(User user, Long startin){
+		return repository.findNewByUser(user.getId(), user.getId(), startin);
+	};
+	
+	//MESAGENS DE UM USUARIO PARA OUTRO 
 	public List<Message> findByUser(User user, User prest){
 		return repository.findByUsers(user.getId(), prest.getId(), user.getId(), prest.getId());
 	};
-
+	
+	//MESAGENS DE UM USUARIO PARA OUTRO COM ID MAIOR QUE startin
+	public List<Message> findNewByUsers(User user, User prest, Long startin){
+		return repository.findNewByUsers(user.getId(), prest.getId(), user.getId(), prest.getId(), startin);
+	};
+	
+	//MENSAGENS ENVIARDO PELO USUARIO
 	public List<Message> findByUserFrom(User user){
 		return repository.findByUserFrom(user);
 	};
 
+	//MENSAGENS DESTINADA AO UAUARIO
 	public List<Message> findByUserTo(User user){
 		return repository.findByUserTo(user);
 	};
 
+	//REMOVER MENSAGEM
 	public void delete(Long id) {
         repository.deleteById(id);
     }

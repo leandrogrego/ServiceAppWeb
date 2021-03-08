@@ -3,21 +3,28 @@
 <head><meta charset="UTF-8"></head>
 <body>
 	<script type="text/javascript" class="layout-scripts" th:fragment="scripts">
-
-		//VARIÁVEIS DEAMBIENTE
-		var user, servicos, servico = {id:'', name:''}, prestadores, prestador, loop=false, position;
+		  ////////////////////////
+		 //VARIÁVEIS DEAMBIENTE//
+		////////////////////////
+		var user, servicos, servico = {id:'', name:''}, prestadores, prestador, loop=false, position, lastMessageId;
 	
-		//FUNÇÕES DA TELA SERVIÇOS
+		  ////////////////////////////
+		 //FUNÇÕES DA TELA SERVIÇOS//
+		////////////////////////////
+		
+		// Gera botao de Servico
 		function geraBotaoServico(servico){
 			return'<button onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
 				servico.name + '</button>';
 		}
 		
+	    // Adicionar Servico a lista
 		function addServico(servico){
 			var botao = geraBotaoServico(servico);
 			$("#listaServicos").append(botao);
 		}
 		
+	    // Carrega lista de Servicos
 		function loadServicos(){							
 			$.get("/api/s", function(serv) {
 				servicos = serv;
@@ -27,6 +34,7 @@
 			});
 		}
 		
+	    // Filtrar na lista de Servicos
 		function filterServicos(text){
 			var find = false;
 			$("#listaServicos").html('');
@@ -37,7 +45,11 @@
 			});
 		}
 		
-		//FUNÇOES DA TELA PRESTADORES
+		  ///////////////////////////////
+		 //FUNÇOES DA TELA PRESTADORES//
+		///////////////////////////////
+		
+		// Gera botao de Prestador
 		function geraBotaoPrestador(prestador){
 			var servs = '';
 			prestador.servicos.forEach(function(s){
@@ -47,18 +59,19 @@
 			'<div class="btn btn-secondary text-light col-12" style="border-radius: 50px"><img class="col-4 m-1 float-left" style="border-radius: 50%" src="'+prestador.avatar_url+'"><br/><big>'+prestador.name + '</big><br/><small>'+servs+'</small></div></button>';
 		}
 		
+		// Adiciona Prestador a lista
 		function addPrestador(prestador){
 			var botao = geraBotaoPrestador(prestador);
 			$("#listaPrestadores").append(botao);
 		}
 		
+		// Carrega Lista de Prestadores
 		function loadPrestadores(servicoId, servicoName){
 			gps();
 			servico.id = servicoId;
 			servico.name = servicoName;
 			$("#distancia").attr('alt', servico.id);
 			var distancia=$("#distancia").val();
-			console.log(distancia);
 			$.get("/api/s/"+servicoId+"/p?latitude="+position.latitude+"&longitude="+position.longitude+"&distancia="+distancia, function(contatos) {
 				prestadores = contatos;
 				$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
@@ -67,11 +80,11 @@
 			});
 		}	
 		
+		// Carregar Prestadores de todos os Servicos
 		function loadAllPrestadores(){
 			gps();
 			$("#distancia").attr('alt', 'all');
 			var distancia=$("#distancia").val();
-			console.log(distancia);
 			$.get("/api/us?latitude="+position.latitude+"&longitude="+position.longitude+"&distancia="+distancia, function(contatos) {
 				prestadores = contatos;
 				$("#listaPrestadores").html('<h4>Prestadores de Serviços</h4>');
@@ -80,6 +93,7 @@
 			});
 		}		
 		
+		// Atualiza GeoLocalização do Usuario
 		function success(pos) {
 			var crd = pos.coords;			
 			$.ajax({
@@ -88,7 +102,6 @@
 	            dataType: 'json',
 	            contentType: 'application/json',
 	            success: function (loc) {
-	            	console.log('GPS ok');
 					position = loc;
 				},
 	            data: JSON.stringify({ 
@@ -103,11 +116,13 @@
 	        });
 	
 		};
-	
+		
+		// Erro ao capturar GeoLocializacao
 		function error(err) {
 			console.warn('ERROR(' + err.code + '): ' + err.message);
 		};
-	
+		
+		// Captura GeoLocalizacao
 		function gps(){
 			var options = {
 				enableHighAccuracy: true,
@@ -117,6 +132,7 @@
 			navigator.geolocation.getCurrentPosition(success, error, options);
 		}
 		
+		// Filtrar na lista de Prestadores
 		function filterPrestadores(text){
 			var find = false;
 			$("#listaPrestadores").html('');
@@ -127,6 +143,7 @@
 			});
 		}
 		
+		// Carregar Lista de Contatos
 		function loadContatos(){
 			$.get("/api/u/c", function(contatos) {
 				prestadores = contatos;
@@ -134,10 +151,26 @@
 				contatos.forEach(addPrestador);
 				show("Prestadores");
 			});
-		}		
+		}	
 		
-		//FUNÇÕES DA TELA MENSAGENS
+		  /////////////////////////////
+		 //FUNÇÕES DA TELA MENSAGENS//
+		/////////////////////////////
+		
+		// Converter para Data e Hora Local
+		function convertUTCDateToLocalDate(dateString) {
+			var date = new Date(dateString)
+		    var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+		    var offset = date.getTimezoneOffset() / 60;
+		    var hours = date.getHours();
+		    newDate.setHours(hours - offset);
+		    dateString = newDate.toJSON();
+		    return dateString;   
+		}
+		
+		// Gerar card de mensagem
 		function geraMensagen(mensagem){
+			mensagem.created = convertUTCDateToLocalDate(mensagem.created);
 			var color;
 			if(mensagem.ready){
 				color = 'primary';
@@ -155,19 +188,23 @@
 			}
 		}
 		
+		// Gerar /rotulo de data
 		function criaRotuloData(date){
-			var dia = date.substring(8,10);
+			var dia = date.substring(8,12);
 			var mes = date.substring(5,7);
 			var ano = date.substring(0,4);
 			date = dia+'/'+mes+'/'+ano;
-			return '<div class="mx-auto text-light m-2 col-12 bg-secondary">'+date+'</dov>'
+			return '<div class="mx-auto text-light text-center m-2 col-12 bg-secondary">'+date+'</dov>'
 		}
 		
+		// Adicionar mensagem a lista 
 		function addMensagem(mensagem, data){
 			var div = geraMensagen(mensagem);
 			$("#listaMensagens").append(div);
+			lastMessageId = mensagem.id;
 		}
 		
+		// carregar mensagens do contato
 		async function loadMensagens(prestadorId, pretadorName){
 			$.get("api/m/p/"+prestadorId, function(mensagens) {
 				$("#titleMensagens").html(pretadorName	);
@@ -175,7 +212,8 @@
 				$("#buttonMensagem").val(prestadorId);
 				var data;
 				for(var i=0; i<mensagens.length; i++){
-					var created = mensagens[i].created.substring(0,10);
+					var created = convertUTCDateToLocalDate(mensagens[i].created) 
+					created = created.substring(0,10);
 					if(data != created){
 						var rotuloData = criaRotuloData(created);
 						$("#listaMensagens").append(rotuloData); 
@@ -191,22 +229,41 @@
 			
 		}
 		
+		//carregar novas mensagens
+		async function loadNewMensagens(prestadorId, messageId){
+			$.get("api/m/p/"+prestadorId+"/new/"+messageId, function(mensagens) {
+				var data;
+				for(var i=0; i<mensagens.length; i++){
+					var created = convertUTCDateToLocalDate(mensagens[i].created) 
+					created = created.substring(0,10);
+					if(data != created){
+						var rotuloData = criaRotuloData(created);
+						$("#listaMensagens").append(rotuloData); 
+						data = created;
+					}
+					addMensagem(mensagens[i]);
+				}
+				location.href="#lastMensagem";
+			})
+		}
+		
+		// loop de novar mensagens
 		function loopMensagens(){
-			var PrestadorName = $("#titleMensagens").html();
 			var PrestadorId = $("#buttonMensagem").val();
 			var div = $("#listaMensagem"); 
 			if(loop){
-				loadMensagens(PrestadorId, PrestadorName);
+				loadNewMensagens(PrestadorId, lastMessageId);
 			}
 		}
 		
+		// Enviar ao pressionar a tecla ENTER
 		$('input[type=text]').on('keydown', function(e) {
 		    if (e.which == 13) {
 		    	sendMensagem();
 		    }
 		});
 		
-		
+		// Enviar Mensagems
 		function sendMensagem(){
 			var mens = $('#inputMensagem').val();
 			var prestadorId = $('#buttonMensagem').val();
@@ -221,27 +278,35 @@
 			}
 		}
 		
-		//FUNÇÕES DA TELA MEUS SERVIÇOS
+		  /////////////////////////////////
+		 //FUNÇÕES DA TELA MEUS SERVIÇOS//
+		/////////////////////////////////
+		
+		// Gerar botao de adicionar Servico
 		function geraBotaoAddServico(servico){
 			return'<button onclick="addServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
 				servico.name + '</button>';
 		}
 		
+		// Gerar botao de remover Servico  
 		function geraBotaoRemoveServico(servico){
 			return'<button onclick="remServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
 				servico.name + '</button>';
 		}
 		
+		// Card de Servico adicionado
 		function added(servico){
 			var botao = geraBotaoRemoveServico(servico);
 			$("#myservicos").append(botao);
 		}
 		
+		// Card de Servico nao adicionado		
 		function notAdded(servico){
 			var botao = geraBotaoAddServico(servico);
 			$("#noservicos").append(botao);
 		}
 	
+		// Adicionar Servico
 		function addServicos(id){
 			$.ajax({
 			    url: "/api/u/s/"+id,
@@ -255,6 +320,7 @@
 			});
 		}
 		
+		// Remover Servico
 		function remServicos(id){
 			$.ajax({
 			    url: "/api/u/s/"+id,
@@ -268,6 +334,7 @@
 			});
 		}
 		
+		// Carregar listas de Meus Servicos
 		function loadMyServicos(){
 			$.get("/api/u/s", function(myservicos) {
 				$("#myservicos").html('');
@@ -278,6 +345,7 @@
 			show("listaMeusServicos");
 		}
 		
+		// Pegar dados de Usuario
 		function getUser(){
 			$.get("api/u", function(u) {
 				user = u;
@@ -285,8 +353,8 @@
 			return(user)
 		}
 		
+		// Alternar entre telas
 		function show(div){
-	
 			$("#Servicos").hide();
 			$("#Prestadores").hide();
 			$("#listaMeusServicos").hide();
@@ -295,12 +363,16 @@
 			if(div == 'Mensagens') {loop = true} else {loop = false};
 		}
 		
+		// Execução ao iniciar
 		gps();
 		//getUser();					
 		loadServicos();
 		setInterval(loopMensagens, 10000);
 		
-		<!-- start webpushr tracking code --> 
+		  ///////////////////
+		 // start webpushr// 
+		///////////////////
+		
 		(function(w,d, s, id) {if(typeof(w.webpushr)!=='undefined') return;w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};var js, fjs = d.getElementsByTagName(s)[0];js = d.createElement(s); js.id = id;js.async=1;js.src = "https://cdn.webpushr.com/app.min.js";
 		fjs.parentNode.appendChild(js);}(window,document, 'script', 'webpushr-jssdk'));
 		webpushr('setup',{'key':'BDNhX2aQcjWvQ-PCMhsr94F3OazoCRc-8pMcwGl3A1JebG92i9uEzK3o5Oc7vL3szIkOKC_v64yTft93gBXeH4o' });
@@ -309,11 +381,10 @@
 			    url: "/api/u/push/"+sid,
 			    type: 'GET',
 			    success: function(myservicos) {
-			    	console.log(sid)
 			    }
 			});
 		});
-		<!-- end webpushr tracking code -->
+		// end webpushr
 		
 		/*var l = window.location.href;
 		if(l.indexOf("#newmessages/") != -1){
