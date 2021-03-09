@@ -1,5 +1,6 @@
 package br.net.serviceapp.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +77,11 @@ public class MessageService {
 	public void delete(Long id) {
         repository.deleteById(id);
     }
+	
+	//MENSAGENS POR INTERVALO DE DATAS
+	public List<Message> findByDateInterval(Date startDate, Date endDate) {
+		System.out.println(startDate+" - "+endDate);
+		return repository.findByDateInterval(startDate, endDate);
+	}
 	
 }

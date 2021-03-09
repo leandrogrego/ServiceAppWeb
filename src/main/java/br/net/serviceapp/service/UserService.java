@@ -35,7 +35,6 @@ public class UserService {
 	}
 	
 	public User socialLogin(OAuth2User principal) {
-		System.out.println(principal);
 		String provider = "facebook";
 		String nameLabel = "name";
 		String emailLabel = "email";

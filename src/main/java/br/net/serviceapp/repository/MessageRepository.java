@@ -1,5 +1,6 @@
 package br.net.serviceapp.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,5 +39,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
 	@Query(value="SELECT * FROM `message` WHERE `to` = ?", nativeQuery=true)
 	public List<Message> findByUserTo(User user);
+
+	//MENSAGENS POR INTERVALO DE DATAS
+	@Query(value="SELECT * FROM `message` WHERE (`created` between ? and ?) and `delivery` is NULL group by from_id", nativeQuery=true)
+	public List<Message> findByDateInterval(Date startDdate, Date endDate);
 
 }

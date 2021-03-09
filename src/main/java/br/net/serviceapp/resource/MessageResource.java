@@ -98,6 +98,12 @@ public class MessageResource {
 		if(user != null && prest != null){
 			List<Message> messages = messageService.findByUser(user, prest);
 			if(messages != null ){
+				messages.forEach(m -> {
+					if(m.getTo().getId() == user.getId()) {
+						m.setDelivery();
+						messageService.save(m);
+					}
+				});
 				return ResponseEntity.ok(messages);
 			}
 		}
@@ -116,6 +122,12 @@ public class MessageResource {
 		if(user != null && prest != null){
 			List<Message> messages = messageService.findNewByUsers(user, prest, messageId);
 			if(messages != null ){
+				messages.forEach(m -> {
+					if(m.getTo().getId() == user.getId()) {
+						m.setDelivery();
+						messageService.save(m);
+					}
+				});
 				return ResponseEntity.ok(messages);
 			}
 		}
@@ -138,14 +150,12 @@ public class MessageResource {
 		return ResponseEntity.badRequest().build();
 	}
 	
-	
 	@PutMapping("/m")
 	public ResponseEntity<List<Message>> setRead(
 			@AuthenticationPrincipal OAuth2User principal,
 			@RequestBody List<Message> body
 			){
 		User user = userService.socialLogin(principal);
-		//System.out.println(body.toString());
 		if(user !=null && body != null) {
 			body.forEach( mess -> {
 				if( user.getId() == mess.getTo().getId()) {

@@ -173,7 +173,6 @@ public class UserResource {
 			){
 		User user = userService.socialLogin(principal);
 		user.setLocation(location);
-		System.out.println(location);
 		userService.save(user);
 		return ResponseEntity.ok(location);
 	}

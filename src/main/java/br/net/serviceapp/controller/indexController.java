@@ -35,7 +35,6 @@ public class indexController {
 	@GetMapping("/home")
 	public String home(Model model, @AuthenticationPrincipal OAuth2User principal) {
     	User user = userService.socialLogin(principal);
-    	System.out.println(principal);
     	model.addAttribute(user);
 		return "home";
 	}

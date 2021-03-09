@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-
-	@Autowired 
-	public JavaMailSender mailSender;
 	
+	@Autowired
+	private JavaMailSender emailSender;
+
 	public boolean send(
 			String from, 
 			String to, 
@@ -23,7 +23,7 @@ public class EmailService {
         message.setSubject(subject);
     	message.setText(text);
         try {
-            mailSender.send(message);
+        	emailSender.send(message);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
