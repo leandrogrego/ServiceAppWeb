@@ -116,7 +116,7 @@ public class UserService {
 		contacts.forEach(contact -> {
 			List<Message> messages = messageRepository.findNotRead(user.getId(), contact.getId(), user.getId(), contact.getId());
 			messages.forEach( m -> {
-				if( m.getTo().getId() == user.getId() && m.getRead() == null ) {
+				if( m.getTo().getId() == user.getId() && m.getDelivery() == null ) {
 					contact.setNotRead(contact.getNotRead()+1);
 				}
 			});

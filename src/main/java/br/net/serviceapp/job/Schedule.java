@@ -30,13 +30,13 @@ public class Schedule {
 		
 		Date endDate = new Date();
         Long now = endDate.getTime();
-        Long time = now - MINUTO;
+        Long time = now - HORA;
         Date startDate = new Date(time);
         List<Message> messages = messageService.findByDateInterval(startDate, endDate);
         messages.forEach(m->{
         	if(m.getTo().getEmail()!=null) {
         		emailService.send(
-        				"milkpoint@serviceapp.net.br", 
+        				"noreply@serviceapp.net.br", 
         				m.getTo().getEmail(), 
         				"Você tem mensagens não lidas",
         				"Você tem mensages não lidas de "+m.getFrom().getName()

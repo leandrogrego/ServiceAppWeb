@@ -54,7 +54,7 @@ public class MessageResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	//LISTA NOVAS MENSAGENS DE UM USUARIO
+	//LISTA NOVAS MENSAGENS PARA UM USUARIO
 	@GetMapping("/m/new/{messageId}")
 	public ResponseEntity<List<Message>> listNew(
 			@AuthenticationPrincipal OAuth2User principal,
@@ -69,6 +69,37 @@ public class MessageResource {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	//QUANTIDADE DE MENSAGENS NOVAS
+	@GetMapping("/m/new")
+	public ResponseEntity<Long> ountNew(
+			@AuthenticationPrincipal OAuth2User principal
+		){
+		User user = userService.socialLogin(principal);
+		if(user != null ){
+			Long messages = messageService.countNew(user);
+			if(messages != null ){
+				return ResponseEntity.ok(messages);
+			}
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	//QUANTIDADE DE MENSAGENS NOVAS
+	@GetMapping("/m/new/p/{fromId}")
+	public ResponseEntity<Long> ountNewByFrom(
+			@AuthenticationPrincipal OAuth2User principal,
+			@PathVariable("fromId") Long fromId 
+		){
+		User user = userService.socialLogin(principal);
+		if(user != null ){
+			Long messages = messageService.countNewByFrom(user, fromId);
+			if(messages != null ){
+				return ResponseEntity.ok(messages);
+			}
+		}
+		return ResponseEntity.notFound().build();
+	}	
 	
 	//MENSAGEM ESPECIFICA
 	@GetMapping("/m/{id}")

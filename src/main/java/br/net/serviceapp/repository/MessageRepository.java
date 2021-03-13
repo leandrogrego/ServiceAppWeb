@@ -44,4 +44,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 	@Query(value="SELECT * FROM `message` WHERE (`created` between ? and ?) and `delivery` is NULL group by from_id", nativeQuery=true)
 	public List<Message> findByDateInterval(Date startDdate, Date endDate);
 
+	@Query(value="SELECT count(id) FROM `message` WHERE `to_id` = ? and `delivery` is NULL", nativeQuery=true)
+	public Long countNew(Long id);
+	
+	@Query(value="SELECT count(id) FROM `message` WHERE `to_id` = ? and `from_id` = ? and `delivery` is NULL", nativeQuery=true)
+	public Long countNewByFrom(Long toId, Long fromId);
+
 }

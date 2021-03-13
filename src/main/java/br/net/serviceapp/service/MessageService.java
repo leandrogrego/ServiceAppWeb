@@ -83,5 +83,13 @@ public class MessageService {
 		System.out.println(startDate+" - "+endDate);
 		return repository.findByDateInterval(startDate, endDate);
 	}
+
+	public Long countNew(User user){
+		return repository.countNew(user.getId());
+	};
+	
+	public Long countNewByFrom(User user, Long fromId) {
+		return repository.countNewByFrom(user.getId(), fromId);
+	}
 	
 }

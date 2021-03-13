@@ -13,15 +13,18 @@
 				ServiceApp
 			</a>			
 			<button id="toggle" class="navbar-toggler btn btn-outline-light" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarNav" aria-expanded="false" aria-label="Alterna navegação" th:if="${user != null}">
-				<span class="navbar-toggler-icon">
-					<img width=28 th:src="${user?.avatar_url}" class="fas fa-user" id="socialIcon" /> 
+				<span id="newMenssages2" class="btn btn-danger text-loght float-ridght p-0 m-0" style="border-radius: 50%; display: none; left: -100" ></span>
+				<span class="navbar-toggler-icon nowrap">
+					<img width=28 th:src="${user?.avatar_url}" class="fas fa-user" id="socialIcon" />
 				</span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse" sec:authorize="isAuthenticated()" th:if="${user != null}">
 				<div class="nav navbar-nav">        
 	        		<a onclick="loadServicos()" class="btn btn-success btn-outline-light">Serviços</a>
 	        		<a onclick="loadAllPrestadores()" class="btn btn-warning btn-outline-light">Prestadores</a>
-	        		<a onclick="loadContatos()" class="btn btn-primary btn-outline-light">Contatos</a>
+	        		<a onclick="loadContatos()" class="btn btn-primary btn-outline-light">
+	        			Contatos <span id="newMenssages" class="btn btn-danger text-loght float-ridght p-0 m-0 " style="border-radius: 50%; display: none" ></span>
+       				</a>
 	        		<a onclick="loadMyServicos()" class="btn btn-secondary btn-outline-light">Meus Serviços</a>
 	        		<a class="btn btn-danger btn-outline-light" href="/admin" th:if="${user?.perfil == 7}">ADMIN</a>
 	        		<a class="btn btn-kark btn-outline-light" th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Sair</a>

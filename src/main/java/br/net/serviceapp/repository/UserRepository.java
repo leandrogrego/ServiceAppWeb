@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	public User findByToken(String token);
 	
-	@Query(value="SELECT * FROM `user` ORDER BY `name`", nativeQuery=true)
+	@Query(value="SELECT u.* FROM user u INNER JOIN user_servicos us ON u.id = us.user_id group by u.id order by name ASC", nativeQuery=true)
 	public List<User> findAllPublic();
 
 	@Query(value="SELECT * FROM `user` WHERE `social_id` = ? AND provider = ? LIMIT 1", nativeQuery=true)

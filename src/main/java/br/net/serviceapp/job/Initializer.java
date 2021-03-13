@@ -55,13 +55,14 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 	}
 	
 	private void StartAlert() {
+
 		emailService.send(
-				"milkpoint@serviceapp.net.br", 
+				"noreply@serviceapp.net.br", 
 				"leandrogrego@gmail.com", 
 				"Alerta de Reinicializaçao do Sistema ServiceApp",
-				"O Sistema ServiceApp fpo omocoaçozadp Corretamente em \n"
+				("O Sistema ServiceApp fpo omocoaçozadp Corretamente em \n"
 				+new Date()
-				+"\n\nAtenciosamente:\nEquipe ServiceApp"
+				+"\n\nAtenciosamente:\nEquipe ServiceApp")
 				);
 	}
 

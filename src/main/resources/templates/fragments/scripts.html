@@ -14,8 +14,9 @@
 		
 		// Gera botao de Servico
 		function geraBotaoServico(servico){
-			return'<button onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')" class="btn btn-secondary btn-outline-warning text-light">'+
-				servico.name + '</button>';
+			return'<div class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 card btn btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px" onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')">'+
+				servico.name +
+				'</div>';
 		}
 		
 	    // Adicionar Servico a lista
@@ -53,10 +54,25 @@
 		function geraBotaoPrestador(prestador){
 			var servs = '';
 			prestador.servicos.forEach(function(s){
-				servs += '<span class="btn btn-outline-light mr-auto m-1 p-0" style="border-radius: 10px">'+s.name+' </span>';
+				servs += '<span class="btn m-0 p-0" style="border-radius: 10px">'+s.name+' </span>';
 			});
-			return'<button onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')" class="btn-outline-warning col-xs-4 col-md-6 col-sm-12 p-1" style="border-radius: 50px">'+
-			'<div class="btn btn-secondary text-light col-12" style="border-radius: 50px"><img class="col-4 m-1 float-left" style="border-radius: 50%" src="'+prestador.avatar_url+'"><br/><big>'+prestador.name + '</big><br/><small>'+servs+'</small></div></button>';
+			var plural = prestador.notRead == 1 ? ' nova mensagem' : ' novas mensagens'
+			var newMess = prestador.notRead > 0 ? '<div class="font-weight-bold btn btn-danger text-loght p-0 m-0">'+prestador.notRead + plural +'</div>' : ''; 
+			return'<div class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 card btn-outline-warning align-top align-text-top" style="border-radius: 30px" onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')">'+
+					'<div class="w-100 align-top align-text-top">'+
+						'<div class="col m-1 font-weight-bold">'+prestador.name + '</div>'+
+					'</div>'+
+					'<div class="w-100 align-top align-text-top">'+
+						'<img class="col-4 d-inline-block align-top" style="border-radius: 50%" src="'+prestador.avatar_url+'">'+
+						'<div class="col-8 d-inline-block align-top align-text-top">'+
+							'<span class="m-1 bg-dark text-light col-12 d-block " style="border-radius: 5px">Servicos</span>'+
+							servs+
+						'</div>'+
+					'</div>'+
+					'<div class="w-100">'+
+					newMess +
+					'</div>'+
+			'</div>';
 		}
 		
 		// Adiciona Prestador a lista
@@ -74,7 +90,7 @@
 			var distancia=$("#distancia").val();
 			$.get("/api/s/"+servicoId+"/p?latitude="+position.latitude+"&longitude="+position.longitude+"&distancia="+distancia, function(contatos) {
 				prestadores = contatos;
-				$("#listaPrestadores").html('<h4>'+servicoName+'</h4>');
+				$("#listaPrestadores").html('<h4 class="col-12">'+servicoName+'</h4>');
 				contatos.forEach(addPrestador);
 				show("Prestadores");
 			});
@@ -87,7 +103,7 @@
 			var distancia=$("#distancia").val();
 			$.get("/api/us?latitude="+position.latitude+"&longitude="+position.longitude+"&distancia="+distancia, function(contatos) {
 				prestadores = contatos;
-				$("#listaPrestadores").html('<h4>Prestadores de Serviços</h4>');
+				$("#listaPrestadores").html('<h4 class="col-12">Prestadores de Serviços</h4>');
 				contatos.forEach(addPrestador);
 				show("Prestadores");
 			});
@@ -114,7 +130,6 @@
 					provider: ""
 				})
 	        });
-	
 		};
 		
 		// Erro ao capturar GeoLocializacao
@@ -147,7 +162,7 @@
 		function loadContatos(){
 			$.get("/api/u/c", function(contatos) {
 				prestadores = contatos;
-				$("#listaPrestadores").html('<h4>Meus Contatos</h4>');
+				$("#listaPrestadores").html('<h4 class="col-12">Meus Contatos</h4>');
 				contatos.forEach(addPrestador);
 				show("Prestadores");
 			});
@@ -249,6 +264,7 @@
 		
 		// loop de novar mensagens
 		function loopMensagens(){
+			countNew();
 			var PrestadorId = $("#buttonMensagem").val();
 			var div = $("#listaMensagem"); 
 			if(loop){
@@ -276,6 +292,24 @@
 				$('#inputMensagem').val('');
 				$("#inputMensagem").focus();
 			}
+		}
+		
+		//Contagem de novas mensagens
+		function countNew(){
+			$.get(
+				"api/m/new", 
+				function(countNew){
+					if(countNew > 0){
+						$("#newMenssages").html(countNew);
+						$("#newMenssages2").html(countNew);
+						$("#newMenssages").show();
+						$("#newMenssages2").show();
+					} else {
+						$("#newMenssages").hide();
+						$("#newMenssages2").hide();
+					}
+				}
+			);
 		}
 		
 		  /////////////////////////////////
@@ -365,7 +399,8 @@
 		
 		// Execução ao iniciar
 		gps();
-		//getUser();					
+		//getUser();	
+		countNew();
 		loadServicos();
 		setInterval(loopMensagens, 10000);
 		
