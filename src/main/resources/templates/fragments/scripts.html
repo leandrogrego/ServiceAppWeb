@@ -318,14 +318,14 @@
 		
 		// Gerar botao de adicionar Servico
 		function geraBotaoAddServico(servico){
-			return'<button onclick="addServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
-				servico.name + '</button>';
+			return'<div onclick="addServicos('+servico.id+')" class="col-sm-12 col-md-12 col-lg-5 col-xl-3 p-1 m-1 text-light btn btn-success btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px">'+
+				servico.name + '</div>';
 		}
 		
 		// Gerar botao de remover Servico  
 		function geraBotaoRemoveServico(servico){
-			return'<button onclick="remServicos('+servico.id+')" class="btn btn-secondary btn-outline-warning text-light">'+
-				servico.name + '</button>';
+			return'<div onclick="remServicos('+servico.id+')" class="col-sm-12 col-md-12 col-lg-5 col-xl-3 p-1 m-1 text-light btn btn-danger btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px">'+
+				servico.name + '</div>';
 		}
 		
 		// Card de Servico adicionado

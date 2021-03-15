@@ -1,20 +1,15 @@
 package br.net.serviceapp.job;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import br.net.serviceapp.model.Address;
-import br.net.serviceapp.model.Message;
 import br.net.serviceapp.model.Servico;
-import br.net.serviceapp.model.User;
 import br.net.serviceapp.service.EmailService;
 import br.net.serviceapp.service.ServicoService;
-import br.net.serviceapp.service.UserService;
 
 @Component
 public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
@@ -28,17 +23,19 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		System.out.println("----- Creating Default Services ------");
+		
 		createServico("Cabelereiro", "Corte de cabelo Masculino e Feminino.");
-		createServico("Designer Gr·fico", "Designer Gr·fico");
-		createServico("Eletricista", "Reparos ElÈtricos");
-		createServico("EletrÙnico", "Reparos em eletrodomÈsticos e demais equipamentos eletrÙnicos");
-		createServico("Encanador", "Reparos hidr·ulicos");
+		createServico("Designer Gr√°fico", "Designer Gr√°fico");
+		createServico("Eletricista", "Reparos El√©tricos");
+		createServico("Eletr√¥nico", "Reparos em eletrodom√©sticos e demais equipamentos eletr√¥nicos");
+		createServico("Encanador", "Reparos hidr√°ulicos");
 		createServico("Entregador", "Entrega de encomendas em geral");
 		createServico("Fachineira", "Fachina em geral");
 		createServico("Jardineiro", "Jardinagem em geral");
-		createServico("Lavadeira", "LavaÁ„o de roupas em geral");
+		createServico("Lavadeira", "Lava√ß√£o de roupas em geral");
 		createServico("Manicure e Pedicure", "Manicure e Pedicure");
-		createServico("Pedreiro", "ConstruÁ„o e obras.");
+		createServico("Pedreiro", "Constru√ß√£o e obras.");
+		createServico("Programador", "Desenvolvimento de softares para computadores e dispositivos moveis.");
 		StartAlert();
 	}
 
@@ -55,12 +52,12 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 	}
 	
 	private void StartAlert() {
-
+		
 		emailService.send(
 				"noreply@serviceapp.net.br", 
 				"leandrogrego@gmail.com", 
-				"Alerta de ReinicializaÁao do Sistema ServiceApp",
-				("O Sistema ServiceApp fpo omocoaÁozadp Corretamente em \n"
+				"Alerta de Reinicializa√ß√£o do Sistema ServiceApp",
+				("O Sistema ServiceApp foi reinicializado corretamente em \n"
 				+new Date()
 				+"\n\nAtenciosamente:\nEquipe ServiceApp")
 				);

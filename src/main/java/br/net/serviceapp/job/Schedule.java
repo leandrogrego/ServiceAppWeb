@@ -38,8 +38,8 @@ public class Schedule {
         		emailService.send(
         				"noreply@serviceapp.net.br", 
         				m.getTo().getEmail(), 
-        				"Você tem mensagens não lidas",
-        				"Você tem mensages não lidas de "+m.getFrom().getName()
+        				"VocÃª tem mensagens nÃ£o lidas",
+        				"VocÃª tem mensages nÃ£o lidas de "+m.getFrom().getName()
         				+"\n\nAcesse: https://www.serviceapp.net.br para ler suas mensagens."
         				+"\n\nAtenciosamente:\nEquipe ServiceApp"
         				);
