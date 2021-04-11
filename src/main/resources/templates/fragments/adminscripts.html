@@ -14,25 +14,84 @@
 		
 		// Gera botao de Servico
 		function geraBotaoServico(servico){
-			return'<div class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 card btn btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px" onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')">'+
-				servico.name +
-				'</div>';
+			var btnEdit = servico.id == "" ? 
+					'<input type="reset" value="Novo Serviço" class="btn btn-success ml-auto" onclick="hideForms(); this.parentNode.parentNode.getElementsByTagName(`FORM`)[0].style.display=`block`">' :
+					servico?.name+'<input type="reset" value="Editar" class="btn btn-sm btn-primary p-0 m-1" onclick="hideForms() ;this.parentNode.parentNode.getElementsByTagName(`FORM`)[0].style.display=`block`">'; 
+			return'<div id="btn'+servico?.id+'" class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 card btn btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px">'+
+				'<span>'+
+					btnEdit +
+				'</span>'+
+				geraFormServico(servico) +
+			'</div>';
 		}
-		
+		  
+		// Gera Fomulario de Servico]
+	    function geraFormServico(servico){
+	    	var btnDelete = servico.id == "" ? "" : '<input type="reset" value="Delete" class="btn btn-danger m-2 ml-auto">';
+	    	
+	    	return'<form action="javascript:saveServico(document.getElementById(`form'+servico?.id+'`))" id="form'+servico?.id+'" action="/api/s" class="bg-light text-dark col-12" style="border-radius: 30px; display: none">'+
+				'<span class="form-control"><input name="id" type="hidden" value="'+servico?.id+'">Id: <big><big>'+servico?.id+'</big></big></span>'+
+				'<span>Nome: <input name="name" type="text" class="form-control" value="'+servico?.name+'"></span>'+
+				'Descricao: <textarea name="descricao" class="form-control">'+servico?.descricao+'</textarea>'+
+				'<span><input type="reset" value="Cancelar" class="btn btn-secondary m-2" onclick="this.parentNode.parentNode.style.display=`none`">'+
+				'<input type="submit" value="Salvar" class="btn btn-success m-2"></span>'+
+			btnDelete+'</span></form>';
+		}
+				
+	    // Novo Servico
+		function newServico(){
+			var botao = geraBotaoServico({id:"", name:'', descricao:""});
+			$("#listaServicos").append(botao)
+			
+		}
+	    		
 	    // Adicionar Servico a lista
 		function addServico(servico){
 			var botao = geraBotaoServico(servico);
 			$("#listaServicos").append(botao);
 		}
+	    
+	    // Salvar Servico
+	    function saveServico(form){
+	    	const serv = {
+    			id : form.elements["id"].value,
+    			name : form.elements["name"].value,
+   				descricao : form.elements["descricao"].value
+   			};
+	    	var method = serv.id == "" ? "post" : "put" 
+	    	$.ajax({
+	            url: 'api/s',
+	            type: method,
+	            dataType: 'json',
+	            contentType: 'application/json',
+	            success: function (s) {
+	            	loadServicos();
+	            	alert("Serviço "+s.name+" salvo com sucesso!");
+				},
+				error: function (s) {
+	            	alert("Houve um erro ao salvar o serviço "+serv.name+"!");
+				},
+	            data: JSON.stringify(serv)
+	        });
+	    }
 		
 	    // Carrega lista de Servicos
 		function loadServicos(){							
 			$.get("/api/s", function(serv) {
 				servicos = serv;
 				$("#listaServicos").html('');
+				newServico();
 				servicos.forEach(addServico);
 				show("Servicos");
 			});
+		}
+	    
+		// Ocultar todos os formularios
+		function hideForms(){
+			var forms=document.getElementsByTagName("FORM");
+			for(var i = 0; i < forms.length; i++){
+				forms[i].style.display="none";
+			}
 		}
 		
 	    // Filtrar na lista de Servicos
@@ -46,9 +105,59 @@
 			});
 		}
 		
-		  ///////////////////////////////
-		 //FUNÇOES DA TELA PRESTADORES//
-		///////////////////////////////
+		  ////////////////////////////
+		 //FUNÇOES DA TELA USUARIOS//
+		////////////////////////////
+		
+		// Gera botao de bloqeuio
+		function geraBotaoBloqueio(prest){
+			var text = prest.enabled==true ? "Ativo" : "Bloqueado";
+		    var color = prest.enabled==true ? "success" : "secondary";
+		    return '<a class="font-weight-bold btn btn-small btn-'+color+' text-loght p-0 m-1 text-nowrap" href="javascript:bloqueio('+prest.id+', '+!prest.enabled+')">' +
+			  	   text+ '</a>'; 
+	  	}
+		  
+		function geraBotaoPerfil(prest){
+			var text = prest.perfil > 1 ? "Administrador" : "Usuário";
+		    var color = prest.perfil > 1 ? "warning" : "light";
+		    var newPerfil = prest.perfil > 1 ? 1 : 7
+		    return '<a class="font-weight-bold btn btn-small btn-'+color+' text-loght p-0 m-1 text-nowrap" href="javascript:setAdmin('+prest.id+', '+newPerfil+')">' +
+			  	   text+ '</a>'; 
+	  	}
+		  
+		// (des)bloqeuio de usuario
+		function bloqueio(id, enabled){
+	    	$.ajax({
+	            url: 'api/u/b',
+	            type: 'put',
+	            dataType: 'json',
+	            contentType: 'application/json',
+	            success: function (u) {
+	            	$("#botaoBloqueio"+u.id).html(geraBotaoBloqueio(u));
+				},
+				error: function (u) {
+	            	alert("Falha no (des)bloqueio do usuário");
+				},
+            	data: '{"id" : "'+id+'","enabled" : "'+enabled+'"}'
+	        });
+		}
+		
+		// Alterar Perfil
+		function setAdmin(id, perfil){
+	    	$.ajax({
+	            url: 'api/u/g',
+	            type: 'put',
+	            dataType: 'json',
+	            contentType: 'application/json',
+	            success: function (u) {
+	            	$("#botaoPerfil"+u.id).html(geraBotaoPerfil(u));
+				},
+				error: function (u) {
+	            	alert("Falha ao alterar perfil do usuário");
+				},
+            	data: '{"id" : "'+id+'","perfil" : "'+perfil+'"}'
+	        });
+		}
 		
 		// Gera botao de Prestador
 		function geraBotaoPrestador(prestador){
@@ -58,10 +167,12 @@
 			});
 			var plural = prestador.notRead == 1 ? ' mensagem ' : ' mensagens '
 			var color = prestador.notRead > 0 ? 'danger' : 'primary';
-			var newMess = '<div class="font-weight-bold btn btn-small p-0 btn-'+color+' text-loght p-0 m-0 text-nowrap">' +
+			var newMess = '<div class="font-weight-bold btn btn-small btn-'+color+' text-loght p-0 m-1 text-nowrap">' +
 				  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/></svg> '+
 				  (prestador.notRead > 0 ? prestador.notRead : '') + plural + '</div>'; 
-
+			
+		    
+		
 		  	return'<div class="card border-waning bg-light text-dark col-sm-12 col-md-3 col-lg-3 col-xl-3 p-1 m-2 card btn-outline-warning align-top align-text-top" style="border-radius: 30px">'+
 				'<div class="card-body row">'+
 					'<div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 p-1 text-center">'+
@@ -69,6 +180,12 @@
 						'<a href="#" onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')">'+
 							newMess +
 						'</a>'+
+						'<span id="botaoBloqueio'+prestador.id+'">'+
+							eraBotaoBloqueio(prestador) +
+						'</span>'+
+						'<span id="botaoPerfil'+prestador.id+'">'+
+							geraBotaoPerfil(prestador) +
+						'</span>'+
 					'</div>'+
 					'<div class="col align-top align-text-top font-weight-bold">'+
 						'<div class="col d-inline-block align-top align-text-top font-weight-bold">'+

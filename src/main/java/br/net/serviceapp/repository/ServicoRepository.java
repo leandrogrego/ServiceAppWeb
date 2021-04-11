@@ -17,5 +17,8 @@ public interface ServicoRepository extends JpaRepository<Servico, Long> {
 	@Override
 	@Query(value="SELECT * FROM `servico` ORDER BY `name`", nativeQuery=true)
 	public List<Servico> findAll();
+
+	@Query(value="SELECT * FROM `servico` WHERE `id` = ? LIMIT 1", nativeQuery=true)
+	public Servico findOne(Long id);
 	
 }

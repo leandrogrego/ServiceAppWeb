@@ -92,10 +92,9 @@ public class User implements Serializable {
 	@JsonIgnore
 	@Column
 	private String token = "";
-	
-	@JsonIgnore
+
 	@Column
-	private int perfil = 1; // 1 to user, 0 to admin
+	private int perfil = 1; 
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "from", cascade = CascadeType.ALL)

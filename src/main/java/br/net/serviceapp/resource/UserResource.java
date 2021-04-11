@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.MatrixVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -256,6 +258,35 @@ public class UserResource {
 		String photo = userService.findOne(id).getPhoto();
 		if(photo != null){
 			return ResponseEntity.ok(photo);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("/u/b")
+	public ResponseEntity<User> bloqueio(
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestBody() User prest
+		) {
+		User user = userService.socialLogin(principal);
+		User prestador = userService.findOne(prest.getId());
+		if(user != null && user.getPerfil() > 1 && prestador != null){
+			prestador.setEnabled(prest.getEnabled());
+			return ResponseEntity.ok(userService.save(prestador));
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("/u/g")
+	public ResponseEntity<User> setAdmin(
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestBody() User prest
+		) {
+		User user = userService.socialLogin(principal);
+		User prestador = userService.findOne(prest.getId());
+		if(user != null && user.getPerfil() >= 7 && prestador != null){
+			prestador.setPerfil(prest.getPerfil());
+			
+			return ResponseEntity.ok(userService.save(prestador));
 		}
 		return ResponseEntity.notFound().build();
 	}

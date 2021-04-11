@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,22 +28,17 @@ public class ServicoResource {
 
 	@Autowired
 	private ServicoService servicoService;
-
+ 
 	@Autowired
 	private UserService userService;
 
-	public ResponseEntity<Servico> add(Servico servico) {
-		if (servico != null) {
-			servicoService.save(servico);
-			return ResponseEntity.ok(servico);
-		}
-		return ResponseEntity.notFound().build();
-	}
-
 	@GetMapping("/s")
-	public ResponseEntity<List<Servico>> listAll() {
+	public ResponseEntity<List<Servico>> listAll(
+			@AuthenticationPrincipal OAuth2User principal
+			) {
+		User user = userService.socialLogin(principal);
 		List<Servico> servicos = servicoService.findAll();
-		if(servicos != null){
+		if(user != null && servicos != null) {
 			return ResponseEntity.ok(servicos);
 		}
 		return ResponseEntity.ok(new ArrayList<>());
@@ -50,10 +46,12 @@ public class ServicoResource {
 	
 	@GetMapping("/s/{id}")
 	public ResponseEntity<Servico> getServico(
+			@AuthenticationPrincipal OAuth2User principal,
 			@PathVariable("id") Long id
 			) {
+		User user = userService.socialLogin(principal);
 		Servico servico = servicoService.findOne(id);
-		if(servico != null){
+		if(user != null && servico != null) {
 			return ResponseEntity.ok(servico);
 		}
 		return ResponseEntity.notFound().build();
@@ -69,22 +67,38 @@ public class ServicoResource {
 			) {
 		User user = userService.socialLogin(principal);
 		Servico servico = servicoService.findOne(id);
-		if(servico != null){
+		if(user != null && servico != null) {
 			List<User> users = userService.filterDistance(servico.getUsers(), latitude, longitude, distancia);
 			users.remove(user);
 			return ResponseEntity.ok(users);
 		}
 		return ResponseEntity.notFound().build();
 	}
-	@PostMapping(path = "/s")
+	
+	@PostMapping("/s")
 	public ResponseEntity<Servico> servico(
-			@RequestBody Servico body,
-			@RequestHeader("token") String token
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestBody Servico body
 			){
-		User user = userService.findByToken(token);
+		User user = userService.socialLogin(principal);
 		if(user !=null) {
 			Servico servico = new Servico(body.getName(), body.getDescricao());
-			return add(servico);
+			return ResponseEntity.ok(servicoService.save(servico));
+		}
+		return ResponseEntity.badRequest().build();
+	}
+	
+	@PutMapping("/s")
+	public ResponseEntity<Servico> update(
+			@AuthenticationPrincipal OAuth2User principal,
+			@RequestBody Servico body
+			){
+		User user = userService.socialLogin(principal);
+		Servico servico = servicoService.findOne(body.getId());
+		if(user != null && servico != null) {
+			servico.setName(body.getName());
+			servico.setDescricao(body.getDescricao());
+			return ResponseEntity.ok(servicoService.save(servico));
 		}
 		return ResponseEntity.badRequest().build();
 	}

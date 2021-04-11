@@ -20,7 +20,7 @@
 			<div class="collapse navbar-collapse" id="navbarCollapse" sec:authorize="isAuthenticated()" th:if="${user != null}">
 				<div class="nav navbar-nav">        
 	        		<a onclick="loadServicos()" class="btn btn-success btn-outline-light">Editar Serviços</a>
-	        		<a onclick="loadAllUsers()" class="btn btn-warning btn-outline-light">Editar Usuários</a>
+	        		<a onclick="loadAllPrestadores()" class="btn btn-warning btn-outline-light">Editar Usuários</a>
 	        		<a class="btn btn-kark btn-outline-light" th:href="@{/}"><i class="fas fa-sign-out-alt"></i>Voltar ao Início</a>
 					<a class="btn ml-auto">
 						<span id="SocialName" th:alt="${user?.id}" th:text="${user?.name}"></span>

@@ -13,8 +13,8 @@ public class ServicoService {
 	@Autowired
 	private ServicoRepository repository;
 	
-	public void save(Servico servico) {
-		repository.save(servico);
+	public Servico save(Servico servico) {
+		return repository.save(servico);
 	}
 	
 	public List<Servico> findAll() {
@@ -22,7 +22,7 @@ public class ServicoService {
 	}
 	
 	public Servico findOne(Long id) {
-		return repository.getOne(id);
+		return repository.findOne(id);
 	}
 	
 	public Servico findByName(String name) {

@@ -19,8 +19,8 @@ public class UserService {
 	@Autowired
 	private MessageRepository messageRepository;
 	
-	public void save(User user) {
-		repository.save(user);
+	public User save(User user) {
+		return repository.save(user);
 	}
 	
 	public User socialLogin(String socialId, String provider) {
