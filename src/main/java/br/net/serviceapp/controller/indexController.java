@@ -14,6 +14,7 @@ import br.net.serviceapp.model.UserInfo;
 import br.net.serviceapp.service.SessionService;
 import br.net.serviceapp.model.User;
 import br.net.serviceapp.service.UserService;
+import br.net.serviceapp.model.Alert;
 
 @Controller
 public class indexController {
@@ -34,9 +35,18 @@ public class indexController {
 	
 	@GetMapping("/home")
 	public String home(Model model, @AuthenticationPrincipal OAuth2User principal) {
-    	User user = userService.socialLogin(principal);
-    	model.addAttribute(user);
-		return "home";
+		if(principal!=null){
+	    	User user = userService.socialLogin(principal);
+	    	if(user.getEnabled() == true) {
+	    		model.addAttribute(user);
+				return "home";
+	    	} else {
+	    		Alert alert = new Alert("error", "Usuário Bloqueado!");
+	    		model.addAttribute(alert);
+	    		return logout();
+	    	}
+		}
+		return "index";
 	}
     
     @GetMapping("/error")

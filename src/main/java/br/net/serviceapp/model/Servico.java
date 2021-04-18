@@ -32,6 +32,9 @@ public class Servico implements Serializable {
 	@Column
 	private String descricao;
 	
+	@Column
+	private String foto;
+	
 	@JsonIgnore
 	@ManyToMany(mappedBy="servicos")
 	private List<User> users = new ArrayList<>();
@@ -44,7 +47,7 @@ public class Servico implements Serializable {
 		
 	public Servico(){}
 	
-	public Servico(String name, String descricao) {
+	public Servico(String name, String descricao, String foto) {
 		this.name = name;
 		this.descricao = descricao;
 	}
@@ -67,6 +70,14 @@ public class Servico implements Serializable {
 	
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+	
+	public String getFoto() {
+		return this.foto;
+	};
+	
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 	
 	public void addUser(User user) {

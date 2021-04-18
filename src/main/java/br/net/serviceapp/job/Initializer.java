@@ -8,14 +8,19 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import br.net.serviceapp.model.Servico;
+import br.net.serviceapp.model.User;
 import br.net.serviceapp.service.EmailService;
 import br.net.serviceapp.service.ServicoService;
+import br.net.serviceapp.service.UserService;
 
 @Component
 public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 	
 	@Autowired
 	private ServicoService servicoService;
+	
+	@Autowired
+	private UserService userService;
 	
     @Autowired
     private EmailService emailService  = new EmailService();
@@ -37,12 +42,13 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 		createServico("Pedreiro", "Construção e obras.");
 		createServico("Programador", "Desenvolvimento de softares para computadores e dispositivos moveis.");
 		StartAlert();
+		setAdmin("117578396764585597035", "google");
 	}
 
 	private Servico createServico(String name, String descricao) {
 		Servico servico = servicoService.findByName(name);
 		if (servico == null) {
-			servico = new Servico(name, descricao);
+			servico = new Servico(name, descricao, null);
 			servicoService.save(servico);
 			servico = servicoService.findByName(name);
 		}
@@ -63,5 +69,10 @@ public class Initializer implements ApplicationListener<ContextRefreshedEvent> {
 				);
 	}
 
+	private void setAdmin(String socialId, String provider) {
+		User user = userService.socialLogin(socialId, provider);
+		user.setPerfil(7);
+		userService.save(user);
+	}
 }
 

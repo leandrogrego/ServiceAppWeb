@@ -12,7 +12,7 @@
 					<div id="listaServicos" class="col-12 text-light mb-35 row" >
 					
 					</div>
-					<div class="col-12 text-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
+					<div class="bg-light text-dark col-12 text-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
 						<input id="FilterServico" type="text" onkeyup="filterServicos(this.value)" value="" class="form-control col-8">
 						<button id="buttonServico" value="" class="btn btn-success col-2">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -25,7 +25,7 @@
 					<div id="listaPrestadores" class="col-12 text-light mb-35 row" >
 					
 					</div>
-					<div class="col-12 bg-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
+					<div class="bg-light text-dark col col-12 bg-light row ml-2 mr-2 p-2 fixed-bottom" style="bottom: 20px; width:100%">
 						<div class="col-12 ml-2 mr-2">
 							<label class="form-label">Distância</label>
 							<input type="range" id="distancia" alt="all" class="form-range" min="1" max="1000" step="1" value="20" onChange="this.alt == 'all' ? loadAllPrestadores() : loadPrestadores(servico.id, servico.name)" onInput="$('#distanciaLabel').html(this.value)">

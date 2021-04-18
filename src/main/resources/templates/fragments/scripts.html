@@ -12,11 +12,20 @@
 		 //FUNÇÕES DA TELA SERVIÇOS//
 		////////////////////////////
 		
+		// Converter imagem para base64
+		
 		// Gera botao de Servico
 		function geraBotaoServico(servico){
-			return'<div class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 card btn btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px" onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')">'+
-				servico.name +
-				'</div>';
+			servico.foto == null ? servico.foto='/images/logo2.png' : {};
+			return'<div class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 btn-outline-warning align-top align-text-top" style="border-radius: 30px" onclick="loadPrestadores('+servico.id+', \''+servico.name+'\')">'+
+				'<div class="col col-4">'+
+					'<img id="avatar" class="bd-placeholder-img w-100" src="'+servico.foto+'" alt="Avatar" height=100% style="border-redius:50%"/>'+
+				'</div>'+
+				'<div class="col col-8">'+
+					'<div class="col font-weight-bold  bg-light">'+ servico.name + '</div>'+
+   					'<div class="col small  bg-light">'+servico.descricao+'</div>'+
+				'</div>'+
+			'</div>';
 		}
 		
 	    // Adicionar Servico a lista

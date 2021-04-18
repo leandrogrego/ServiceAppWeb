@@ -8,7 +8,7 @@
     	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-light">
 			<a class="navbar-brand" href="/">
 				<i class="fas fas-icon " >
-					<image style="height:30px" src="/images/logo2.png" />
+					<image style="height:30px" src="/images/logo.png" />
 				</i>
 				ServiceApp
 			</a>			
@@ -19,9 +19,9 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse" sec:authorize="isAuthenticated()" th:if="${user != null}">
 				<div class="nav navbar-nav">        
-	        		<a onclick="loadServicos()" class="btn btn-success btn-outline-light">Editar Serviços</a>
-	        		<a onclick="loadAllPrestadores()" class="btn btn-warning btn-outline-light">Editar Usuários</a>
-	        		<a class="btn btn-kark btn-outline-light" th:href="@{/}"><i class="fas fa-sign-out-alt"></i>Voltar ao Início</a>
+	        		<a href="javascript:loadServicos()" class="btn btn-success btn-outline-light">Editar Serviços</a>
+	        		<a href="javascript:loadAllPrestadores()" class="btn btn-warning btn-outline-light">Editar Usuários</a>
+	        		<a class="btn btn-kark btn-outline-light" th:href="@{/}">Voltar ao Início</a>
 					<a class="btn ml-auto">
 						<span id="SocialName" th:alt="${user?.id}" th:text="${user?.name}"></span>
 						<img width=28 th:src="${user?.avatar_url}" class="fas fa-user" id="socialIcon" />

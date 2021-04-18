@@ -82,7 +82,7 @@ public class ServicoResource {
 			){
 		User user = userService.socialLogin(principal);
 		if(user !=null) {
-			Servico servico = new Servico(body.getName(), body.getDescricao());
+			Servico servico = new Servico(body.getName(), body.getDescricao(), body.getFoto());
 			return ResponseEntity.ok(servicoService.save(servico));
 		}
 		return ResponseEntity.badRequest().build();
@@ -98,6 +98,7 @@ public class ServicoResource {
 		if(user != null && servico != null) {
 			servico.setName(body.getName());
 			servico.setDescricao(body.getDescricao());
+			servico.setFoto(body.getFoto());
 			return ResponseEntity.ok(servicoService.save(servico));
 		}
 		return ResponseEntity.badRequest().build();

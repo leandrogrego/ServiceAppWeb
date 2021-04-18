@@ -14,29 +14,57 @@
 		
 		// Gera botao de Servico
 		function geraBotaoServico(servico){
+			servico.foto == null ? servico.foto='/images/logo2.png' : {};
 			var btnEdit = servico.id == "" ? 
-					'<input type="reset" value="Novo Serviço" class="btn btn-success ml-auto" onclick="hideForms(); this.parentNode.parentNode.getElementsByTagName(`FORM`)[0].style.display=`block`">' :
-					servico?.name+'<input type="reset" value="Editar" class="btn btn-sm btn-primary p-0 m-1" onclick="hideForms() ;this.parentNode.parentNode.getElementsByTagName(`FORM`)[0].style.display=`block`">'; 
+					'<input type="reset" value="Novo Serviço" class="btn btn-success ml-auto" onclick="hideForms(); document.getElementById(`form'+servico.id+'`).style.display=`block`">' :
+					servico?.name+'<input type="reset" value="Editar" class="btn btn-sm btn-primary p-0 m-1" onclick="hideForms(); document.getElementById(`form'+servico.id+'`).style.display=`block`">'; 
 			return'<div id="btn'+servico?.id+'" class="row bg-light text-dark col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-2 card btn btn-outline-warning align-top align-text-top font-weight-bold" style="border-radius: 30px">'+
-				'<span>'+
+				'<div class="col col-4">'+
+	        		'<img class="bd-placeholder-img card-img-top rounded-top" src="'+servico.foto+'" alt="Avatar" height=100% />'+
+        		'</div>'+	
+	      		'<div class="col col-8 font-weight-bold">'+
 					btnEdit +
-				'</span>'+
-				geraFormServico(servico) +
-			'</div>';
+				'</div>'+
+			'</div>'+
+			geraFormServico(servico);
 		}
 		  
 		// Gera Fomulario de Servico]
 	    function geraFormServico(servico){
-	    	var btnDelete = servico.id == "" ? "" : '<input type="reset" value="Delete" class="btn btn-danger m-2 ml-auto">';
+	    	var btnDelete = servico.id == "" ? "" : '<input type="reset" value="Delete" class="btn btn-danger m-2 ml-auto" style="bottom: 100px; display : none">';
 	    	
-	    	return'<form action="javascript:saveServico(document.getElementById(`form'+servico?.id+'`))" id="form'+servico?.id+'" action="/api/s" class="bg-light text-dark col-12" style="border-radius: 30px; display: none">'+
-				'<span class="form-control"><input name="id" type="hidden" value="'+servico?.id+'">Id: <big><big>'+servico?.id+'</big></big></span>'+
-				'<span>Nome: <input name="name" type="text" class="form-control" value="'+servico?.name+'"></span>'+
-				'Descricao: <textarea name="descricao" class="form-control">'+servico?.descricao+'</textarea>'+
-				'<span><input type="reset" value="Cancelar" class="btn btn-secondary m-2" onclick="this.parentNode.parentNode.style.display=`none`">'+
-				'<input type="submit" value="Salvar" class="btn btn-success m-2"></span>'+
-			btnDelete+'</span></form>';
+	    	return '<form action="javascript:saveServico(document.getElementById(`form'+servico?.id+'`))" id="form'+servico?.id+'" class="bg-light fixed-bottom" style="bottom:100px; display:none">'+
+	    			'<div class="card-body row">'+
+					'<div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center">'+
+		    			'<input type="file" id="foto'+servico.id+'" style="width:50px; display:none" accept="image/jpeg, image/png, image/gif" onchange="encodeImageFileAsURL(this)" />'+
+    					'<img id="displayfoto'+servico.id+'" width="50%" height="100%" src="'+servico.foto+'" alt="Avatar" height=100 onclick="document.getElementById(`foto'+servico.id+'`).click()" />'+
+   					'</div>'+
+   					'<div class="col align-top align-text-top font-weight-bold">'+
+		    			'<span class="form-control">'+
+		    				'<input name="id" type="hidden" value="'+servico?.id+'">Id: <big><big>'+servico?.id+'</big></big>'+
+   						'</span>'+
+						'<span class="col-12">'+
+							'Nome:'+
+							'<input name="name" type="text" class="form-control" value="'+servico?.name+'">'+
+						'</span>'+
+						'Descricao: <textarea name="descricao" rows="3" class="form-control">'+servico?.descricao+'</textarea>'+
+						'<span><input type="reset" value="Cancelar" class="btn btn-secondary m-2" onclick="this.parentNode.parentNode.parentNode.parentNode.style.display=`none`">'+
+							'<input type="submit" value="Salvar" class="btn btn-success m-2"></span>'+
+							btnDelete+
+						'</span>'+
+					'</div>'+
+				'</form>';
 		}
+	    
+	    function encodeImageFileAsURL(element) {
+	        var file = element.files[0];
+	        var reader = new FileReader();
+	        reader.onloadend = function() {
+	        	document.getElementById("display"+element.id).src = reader.result;
+	        	console.log(document.getElementById("display"+element.id).src)
+	        }
+	        reader.readAsDataURL(file);
+	    }
 				
 	    // Novo Servico
 		function newServico(){
@@ -56,7 +84,8 @@
 	    	const serv = {
     			id : form.elements["id"].value,
     			name : form.elements["name"].value,
-   				descricao : form.elements["descricao"].value
+   				descricao : form.elements["descricao"].value,
+   				foto : document.getElementById("displayfoto"+form.elements["id"].value).src
    			};
 	    	var method = serv.id == "" ? "post" : "put" 
 	    	$.ajax({
@@ -171,17 +200,12 @@
 				  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/></svg> '+
 				  (prestador.notRead > 0 ? prestador.notRead : '') + plural + '</div>'; 
 			
-		    
-		
 		  	return'<div class="card border-waning bg-light text-dark col-sm-12 col-md-3 col-lg-3 col-xl-3 p-1 m-2 card btn-outline-warning align-top align-text-top" style="border-radius: 30px">'+
 				'<div class="card-body row">'+
 					'<div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 p-1 text-center">'+
 						'<img class="w-100 d-block" style="border-radius: 50%" src="'+prestador.avatar_url+'">'+
-						'<a href="#" onclick="loadMensagens('+prestador.id+', \''+prestador.name+'\')">'+
-							newMess +
-						'</a>'+
 						'<span id="botaoBloqueio'+prestador.id+'">'+
-							eraBotaoBloqueio(prestador) +
+							geraBotaoBloqueio(prestador) +
 						'</span>'+
 						'<span id="botaoPerfil'+prestador.id+'">'+
 							geraBotaoPerfil(prestador) +
